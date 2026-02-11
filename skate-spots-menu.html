@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKATE SPOTS // VHS SELECTOR</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* CRT Container */
+        .crt-container {
+            position: relative;
+            width: 90vw;
+            max-width: 1500px;
+            height: 85vh;
+            background: #0a0a0a;
+            border: 10px solid #4a4a4a;
+            border-radius: 20px;
+            box-shadow: 
+                inset 0 0 50px rgba(0, 255, 0, 0.1),
+                0 0 100px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+        
+        /* CRT Screen Effect */
+        .crt-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+            overflow: hidden;
+        }
+        
+        /* Scanlines */
+        .crt-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanline 8s linear infinite;
+        }
+        
+        /* Screen curve effect */
+        .crt-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        /* VHS noise overlay */
+        .vhs-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 2px,
+                    rgba(255, 255, 255, 0.03) 4px
+                );
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 998;
+            animation: vhsNoise 0.3s infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+        
+        @keyframes vhsNoise {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.4; }
+        }
+        
+        /* Main content area */
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: 12px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: glitch 3s infinite;
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            color: #ff00ff;
+            text-shadow: 
+                3px 3px 0 #00ffff,
+                -2px -2px 0 #ffff00,
+                0 0 20px #ff00ff;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.5rem;
+            color: #00ff00;
+            text-shadow: 2px 2px 0 #000;
+            letter-spacing: 4px;
+        }
+        
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 2px); }
+            94% { transform: translate(2px, -2px); }
+            96% { transform: translate(-2px, -2px); }
+        }
+        
+        /* Main layout */
+        .main-layout {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        /* Spot menu */
+        .spot-menu {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid #00ff00;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 0, 0.2),
+                0 0 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .spot-menu h2 {
+            font-size: 2rem;
+            color: #ffff00;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+        
+        .spot-item {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: #00ffff;
+            text-shadow: 1px 1px 0 #000;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .spot-item::before {
+            content: '▶';
+            position: absolute;
+            left: -30px;
+            color: #ffff00;
+            transition: left 0.3s;
+        }
+        
+        .spot-item:hover {
+            background: rgba(255, 0, 255, 0.3);
+            border-color: #ffff00;
+            color: #ffff00;
+            transform: translateX(10px);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+        }
+        
+        .spot-item:hover::before {
+            left: 10px;
+        }
+        
+        .spot-item.active {
+            background: rgba(255, 255, 0, 0.3);
+            border-color: #ffff00;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+        }
+        
+        /* Video player */
+        .video-container {
+            flex: 1.5;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #00ffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 255, 0.2),
+                0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .video-title {
+            font-size: 2.5rem;
+            color: #ff00ff;
+            text-shadow: 2px 2px 0 #000;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+        
+        .video-wrapper {
+            flex: 1;
+            background: #000;
+            border: 2px solid #ffff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .placeholder {
+            color: #00ff00;
+            font-size: 2rem;
+            text-align: center;
+            padding: 40px;
+            text-shadow: 2px 2px 0 #000;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+        
+        /* Static overlay for video transitions */
+        .static-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.1) 2px,
+                    rgba(255, 255, 255, 0.1) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.1) 2px,
+                    rgba(255, 255, 255, 0.1) 4px
+                );
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .static-overlay.active {
+            opacity: 1;
+        }
+        
+        /* Scrollbar styling */
+        .spot-menu::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        .spot-menu::-webkit-scrollbar-track {
+            background: #000;
+            border: 1px solid #00ff00;
+        }
+        
+        .spot-menu::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border: 2px solid #000;
+        }
+        
+        .spot-menu::-webkit-scrollbar-thumb:hover {
+            background: #ffff00;
+        }
+        
+        /* Instructions */
+        .instructions {
+            position: absolute;
+            bottom: 10px;
+            right: 20px;
+            color: #00ff00;
+            font-size: 1.2rem;
+            text-shadow: 1px 1px 0 #000;
+            opacity: 0.6;
+            z-index: 1001;
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-container">
+        <div class="crt-screen">
+            <div class="vhs-noise"></div>
+            <div class="content">
+                <div class="header">
+                    <h1>"TOUR DE MAUI"</h1>
+                    <div class="subtitle">// SKATE SPOT SHOWCASE //</div>
+                </div>
+                
+                <div class="main-layout">
+                    <div class="spot-menu">
+                        <h2>[ SELECT SPOT ]</h2>
+                        <div class="spot-item" data-video="TheOG-Grind.mp4"  >THE OG (GRIND)</div>
+                        <div class="spot-item" data-video="TheOG-Ramp.mp4"   >THE OG (RAMP)</div>
+                        <div class="spot-item" data-video="TheLoop.mp4"      >THE LOOP</div>
+                        <div class="spot-item" data-video="TheSpiderman.mp4" >THE SPIDERMAN</div>
+                        <div class="spot-item" data-video="RollingWaves.mp4" >ROLLING WAVES</div>
+                        <div class="spot-item" data-video="TheBridge.mp4"    >THE BRIDGE</div>
+                        <div class="spot-item" data-video="DownTheHole.mp4" >DOWN THE HOLE</div>
+                    </div>
+                    
+                    <div class="video-container">
+                        <div class="video-title" id="videoTitle">SELECT A SPOT</div>
+                        <div class="video-wrapper">
+                            <div class="placeholder" id="placeholder">
+                                ▶ CLICK A SPOT TO PREVIEW ◀<br><br>
+                                [ WAITING FOR SELECTION... ]
+                            </div>
+                            <video id="videoPlayer" controls loop style="display: none;">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="static-overlay" id="staticOverlay"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const spotItems = document.querySelectorAll('.spot-item');
+        const videoPlayer = document.getElementById('videoPlayer');
+        const placeholder = document.getElementById('placeholder');
+        const videoTitle = document.getElementById('videoTitle');
+        const staticOverlay = document.getElementById('staticOverlay');
+        
+        spotItems.forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                spotItems.forEach(i => i.classList.remove('active'));
+                
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Get video source and spot name
+                const videoSrc = this.getAttribute('data-video');
+                const spotName = this.textContent;
+                
+                // Show static effect
+                staticOverlay.classList.add('active');
+                
+                // Update video after brief static
+                setTimeout(() => {
+                    videoPlayer.src = videoSrc;
+                    videoPlayer.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    videoTitle.textContent = spotName;
+                    videoPlayer.play();
+                    
+                    // Hide static
+                    staticOverlay.classList.remove('active');
+                }, 300);
+            });
+        });
+        
+        // Handle video errors (when file doesn't exist yet)
+        videoPlayer.addEventListener('error', function() {
+            placeholder.innerHTML = `⚠ VIDEO FILE NOT FOUND ⚠<br><br>
+                Replace "spot1.mp4" etc. with your actual video files<br><br>
+                Place videos in same folder as this HTML file`;
+            placeholder.style.display = 'block';
+            videoPlayer.style.display = 'none';
+            staticOverlay.classList.remove('active');
+        });
+    </script>
+</body>
+</html>
