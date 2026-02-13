@@ -239,160 +239,145 @@
             }
             65% {
                 transform: translateX(-50%) scale(0.95) rotateZ(0.5deg);
-                box-shadow: 0 0 50px rgba(255, 255, 0, 0.9);
             }
             80% {
-                transform: translateX(-50%) scale(1.05) rotateZ(0deg);
-                filter: hue-rotate(0deg) saturate(1.5);
+                opacity: 1;
+                transform: translateX(-50%) scale(1.05) rotateZ(-0.5deg);
+                filter: hue-rotate(0deg) saturate(1);
             }
             100% {
                 opacity: 1;
                 transform: translateX(-50%) scale(1) rotateZ(0deg);
                 filter: hue-rotate(0deg) saturate(1);
-                box-shadow: 0 0 35px rgba(255, 255, 0, 0.8);
+                box-shadow: 0 0 25px rgba(255, 255, 0, 0.7);
             }
         }
         
-        /* Scanline effect on tooltip */
-        .header h1:hover .title-popup::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(0, 0, 0, 0.1) 2px,
-                rgba(0, 0, 0, 0.1) 4px
-            );
-            pointer-events: none;
-            animation: scanlineMove 0.8s linear infinite;
-        }
-        
-        @keyframes scanlineMove {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(4px); }
-        }
-        
-        .header .subtitle {
+        .subtitle {
             font-size: 1.5rem;
             color: #00ff00;
-            text-shadow: 2px 2px 0 #000;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #00ff00;
         }
         
         @keyframes glitch {
-            0%, 90%, 100% { transform: translate(0); }
-            92% { transform: translate(-2px, 2px); }
-            94% { transform: translate(2px, -2px); }
-            96% { transform: translate(-2px, -2px); }
+            0%, 90%, 100% {
+                transform: translate(0);
+            }
+            91% {
+                transform: translate(-2px, 2px);
+            }
+            92% {
+                transform: translate(2px, -2px);
+            }
+            93% {
+                transform: translate(-2px, 2px);
+            }
+            94% {
+                transform: translate(0);
+            }
         }
         
         /* Main layout */
         .main-layout {
             display: flex;
-            gap: 30px;
+            gap: 20px;
             flex: 1;
-            min-height: 0;
+            overflow: hidden;
         }
         
-        /* Spot menu */
+        /* Spot Menu */
         .spot-menu {
-            flex: 1;
-            background: rgba(0, 0, 0, 0.6);
+            flex: 0 0 280px;
+            background: rgba(0, 0, 0, 0.7);
             border: 3px solid #00ff00;
-            padding: 20px;
+            padding: 15px;
             overflow-y: auto;
-            box-shadow: 
-                inset 0 0 20px rgba(0, 255, 0, 0.2),
-                0 0 30px rgba(0, 255, 0, 0.3);
+            max-height: 100%;
         }
         
         .spot-menu h2 {
-            font-size: 2rem;
             color: #ffff00;
-            text-shadow: 2px 2px 0 #000;
-            margin-bottom: 20px;
+            font-size: 2rem;
             text-align: center;
-            letter-spacing: 4px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px #ffff00;
         }
         
         .spot-item {
-            background: rgba(255, 0, 255, 0.1);
-            border: 2px solid #ff00ff;
-            padding: 15px 20px;
-            margin-bottom: 15px;
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #ff02ff;
+            padding: 12px;
+            margin-bottom: 10px;
             cursor: pointer;
-            font-size: 1.8rem;
-            color: #00ffff;
-            text-shadow: 1px 1px 0 #000;
             transition: all 0.3s;
-            letter-spacing: 2px;
+            font-size: 1.3rem;
+            color: #00efef;
+            text-align: left;
             position: relative;
             overflow: hidden;
         }
         
         .spot-item::before {
-            content: '▶';
+            content: '';
             position: absolute;
-            left: -30px;
-            color: #ffff00;
-            transition: left 0.3s;
-        }
-        
-        .spot-item:hover {
-            background: rgba(255, 0, 255, 0.3);
-            border-color: #ffff00;
-            color: #ffff00;
-            transform: translateX(10px);
-            box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+            transition: left 0.5s;
         }
         
         .spot-item:hover::before {
-            left: 10px;
+            left: 100%;
         }
         
-        .spot-item.active {
-            background: rgba(255, 255, 0, 0.3);
+        .spot-item:hover {
+            background: rgba(0, 255, 0, 0.3);
             border-color: #ffff00;
-            color: #000;
-            font-weight: bold;
-            box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+            color: #ffff00;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
         }
         
-        /* Video player */
+        .spot-item.active  {
+            background: rgba(225, 225, 0, 0.21);
+            border-color: #ffff02;
+            color: #e0e000;
+            box-shadow: 0 0 20px rgba(219, 219, 3, 0.86);
+        }
+        
+        /* Video Container */
         .video-container {
-            flex: 1.5;
-            background: rgba(0, 0, 0, 0.8);
-            border: 3px solid #00ffff;
-            padding: 20px;
+            flex: 1;
             display: flex;
             flex-direction: column;
-            box-shadow: 
-                inset 0 0 20px rgba(0, 255, 255, 0.2),
-                0 0 30px rgba(0, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #00ffff;
+            padding: 15px;
+            overflow: hidden;
         }
         
         .video-title {
-            font-size: 2.5rem;
+            font-size: 2rem;
             color: #ff00ff;
-            text-shadow: 2px 2px 0 #000;
             text-align: center;
-            margin-bottom: 20px;
-            letter-spacing: 3px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #1a001a;
+            border: 2px solid #ff00ff;
+            text-shadow: 0 0 15px #ff00ff;
         }
         
         .video-wrapper {
             flex: 1;
+            position: relative;
             background: #000;
             border: 2px solid #ffff00;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
             overflow: hidden;
         }
         
@@ -403,11 +388,10 @@
         }
         
         .placeholder {
-            color: #00ff00;
-            font-size: 2rem;
+            font-size: 2.5rem;
+            color: #02ff02;
             text-align: center;
-            padding: 40px;
-            text-shadow: 2px 2px 0 #000;
+            text-shadow: 0 0 20px #03c403;
             animation: blink 1.5s infinite;
         }
         
@@ -465,6 +449,234 @@
         .spot-menu::-webkit-scrollbar-thumb:hover {
             background: #ffff00;
         }
+        
+        /* ========================================== */
+        /* RESPONSIVE STYLES FOR MOBILE */
+        /* ========================================== */
+        
+        @media screen and (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .crt-container {
+                width: 95vw;
+                height: auto;
+                min-height: 90vh;
+                border: 6px solid #4a4a4a;
+                border-radius: 12px;
+            }
+            
+            .crt-screen {
+                overflow-y: auto;
+            }
+            
+            .content {
+                padding: 8px;
+                height: auto;
+                min-height: 90vh;
+            }
+            
+            /* Mobile Header */
+            .header {
+                margin-bottom: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+                letter-spacing: 3px;
+                text-shadow: 
+                    2px 2px 0 #00ffff,
+                    -1px -1px 0 #ffff00,
+                    0 0 15px #ff00ff;
+            }
+            
+            .title-popup {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+                white-space: normal;
+                max-width: 80vw;
+                bottom: -50px;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
+            
+            /* Stack layout vertically on mobile */
+            .main-layout {
+                flex-direction: column;
+                gap: 15px;
+                overflow: visible;
+            }
+            
+            /* Mobile Spot Menu */
+            .spot-menu {
+                flex: none;
+                width: 100%;
+                max-height: 40vh;
+                padding: 12px;
+                border: 2px solid;
+            }
+            
+            .spot-menu h2 {
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+            }
+            
+            .spot-item {
+                padding: 15px 10px;
+                margin-bottom: 8px;
+                font-size: 1.2rem;
+                border: 2px solid #ff02ff;
+                /* Larger touch targets for mobile */
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Mobile Video Container */
+            .video-container {
+                flex: none;
+                width: 100%;
+                min-height: 60vh;
+                padding: 12px;
+                border: 2px solid #00ffff;
+            }
+            
+            .video-title {
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+                padding: 8px;
+                border: 2px solid ##ff00ff;
+            }
+            
+            .video-wrapper {
+                min-height: 50vh;
+                border: 2px solid #00ffff;
+            }
+            
+            .placeholder {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+            
+            /* Scrollbar for mobile */
+            .spot-menu::-webkit-scrollbar {
+                width: 8px;
+            }
+        }
+        
+        /* Extra small screens (phones in portrait) */
+        @media screen and (max-width: 480px) {
+            .crt-container {
+                width: 98vw;
+                border: 4px solid;
+                border-radius: 8px;
+            }
+            
+            .content {
+                padding: 6px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+            }
+            
+            .title-popup {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+                bottom: -45px;
+            }
+            
+            .subtitle {
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+            }
+            
+            .spot-menu h2 {
+                font-size: 1.3rem;
+            }
+            
+            .spot-item {
+                font-size: 1.1rem;
+                padding: 12px 8px;
+            }
+            
+            .video-title {
+                font-size: 1.3rem;
+                padding: 6px;
+            }
+            
+            .placeholder {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+        }
+        
+        /* Landscape mode on mobile */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .crt-container {
+                height: auto;
+                min-height: 95vh;
+            }
+            
+            .main-layout {
+                flex-direction: row;
+            }
+            
+            .spot-menu {
+                flex: 0 0 200px;
+                max-height: 100%;
+            }
+            
+            .video-container {
+                flex: 1;
+                min-height: auto;
+            }
+            
+            .video-wrapper {
+                min-height: 60vh;
+            }
+        }
+        
+        /* Tablet portrait */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .header h1 {
+                font-size: 3rem;
+                letter-spacing: 5px;
+            }
+            
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .spot-menu {
+                flex: 0 0 240px;
+            }
+            
+            .spot-menu h2 {
+                font-size: 1.7rem;
+            }
+            
+            .spot-item {
+                font-size: 1.2rem;
+                padding: 12px;
+            }
+            
+            .video-title {
+                font-size: 1.8rem;
+            }
+            
+            .placeholder {
+                font-size: 2rem;
+            }
+        }
     </style>
 </head>
 <body>
@@ -517,7 +729,7 @@
         // ═══════════════════════════════════════════════════════════════════
        
         const CONFIG = {
-            // Twitch channel URL (shown when clicking "JOIN THE TOUR" button)
+            // Your Twitch channel URL (shown when clicking "JOIN THE TOUR" button)
             twitchUrl: "https://www.twitch.tv/MauiKrouse",
             
             // Main title displayed at the top
@@ -547,6 +759,10 @@
                 {
                     name: "ROLLING WAVES",
                     video: "Clips/RollingWaves.mp4",
+                },
+                {
+                    name: "ROLLING WAVES LITE (STILLWATER)",
+                    video: "Clips/RollingWavesLite.mp4",
                 },
                 {
                     name: "THE BRIDGE",
