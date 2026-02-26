@@ -71,16 +71,7 @@
     }
 }
 
-/* Add flicker animation */
-@keyframes crt-flicker {
-    0% { opacity: 1; }
-    50% { opacity: 0.95; }
-    100% { opacity: 1; }
-}
-
-.crt-container {
-    animation: crt-flicker 0.50s infinite;
-}
+/* crt-flicker removed for performance */
         
         /* CRT Screen Effect */
         .crt-screen {
@@ -108,21 +99,9 @@
             );
             pointer-events: none;
             z-index: 1000;
-            animation: scanline 8s linear infinite;
         }
         
-        /* Screen curve effect */
-        .crt-screen::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
-            pointer-events: none;
-            z-index: 999;
-        }
+        /* screen vignette removed for performance */
         
         /* VHS noise overlay */
         .vhs-noise {
@@ -142,19 +121,10 @@
             opacity: 0.3;
             pointer-events: none;
             z-index: 998;
-            animation: vhsNoise 0.3s infinite;
         }
         
-        @keyframes scanline {
-            0% { transform: translateY(0); }
-            100% { transform: translateY(100%); }
-        }
-        
-        @keyframes vhsNoise {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.4; }
-        }
-        
+
+
         /* Main content area */
         .content {
             position: relative;
@@ -300,7 +270,7 @@
             font-size: 1.5rem;
             color: #00ff00;
             letter-spacing: 3px;
-            text-shadow: 0 0 10px #00ff00;
+            text-shadow: 0 0 6px #00ff00;
         }
         
         @keyframes glitch {
@@ -393,14 +363,14 @@
             border-color: #ffff00;
             color: #ffff00;
             transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
         }
         
         .spot-item.active  {
             background: rgba(225, 225, 0, 0.21);
             border-color: #ffff02;
             color: #e0e000;
-            box-shadow: 0 0 20px rgba(219, 219, 3, 0.86);
+            box-shadow: 0 0 10px rgba(219, 219, 3, 0.5);
         }
         
         /* Video Container */
@@ -422,7 +392,7 @@
             padding: 10px;
             background: #1a001a;
             border: 2px solid #ff00ff;
-            text-shadow: 0 0 15px #ff00ff;
+            text-shadow: 0 0 8px #ff00ff;
         }
         
         .video-wrapper {
@@ -434,6 +404,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            contain: layout paint;
         }
         
         .video-wrapper video {
@@ -695,9 +666,10 @@
             font-size: 1.2rem;
             color: #00ffff;
             letter-spacing: 3px;
-            text-shadow: 0 0 8px #00ffff;
+            text-shadow: 0 0 5px #00ffff;
             white-space: nowrap;
             will-change: transform;
+            transform: translateZ(0);
         }
 
         @keyframes tickerScroll {
@@ -713,15 +685,13 @@
             font-family: 'VT323', monospace;
             font-size: 2rem;
             color: #fff;
-            text-shadow:
-                0 0 6px #fff,
-                0 0 14px rgba(255,255,255,0.6);
+            text-shadow: 0 0 6px #fff;
             letter-spacing: 2px;
             pointer-events: none;
             z-index: 50;
             opacity: 0;
             transition: opacity 0.3s ease;
-            filter: blur(0.4px);
+
         }
 
         .channel-display.visible {
@@ -763,7 +733,7 @@
             font-size: 1.8rem;
             color: #00ffff;
             letter-spacing: 3px;
-            text-shadow: 0 0 20px #00ffff;
+            text-shadow: 0 0 10px #00ffff;
             margin-bottom: 30px;
             animation: blink 1s infinite;
         }
@@ -879,13 +849,13 @@
         }
 
         @keyframes rainbowText {
-            0%   { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
-            16%  { color: #ff8800; text-shadow: 0 0 20px #ff8800; }
-            33%  { color: #ffff00; text-shadow: 0 0 20px #ffff00; }
-            50%  { color: #00ff00; text-shadow: 0 0 20px #00ff00; }
-            66%  { color: #00ffff; text-shadow: 0 0 20px #00ffff; }
-            83%  { color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
-            100% { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+            0%   { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+            16%  { color: #ff8800; text-shadow: 0 0 10px #ff8800; }
+            33%  { color: #ffff00; text-shadow: 0 0 10px #ffff00; }
+            50%  { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+            66%  { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+            83%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+            100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
         }
 
         /* Screen shake */
@@ -1175,7 +1145,7 @@
             transform: translate(-50%, -50%);
             font-size: 1.6rem;
             color: #fff;
-            text-shadow: 0 0 10px #000, 0 0 20px #000;
+            text-shadow: 0 0 8px #000;
             letter-spacing: 4px;
             background: rgba(0,0,0,0.55);
             padding: 8px 22px;
@@ -1362,7 +1332,7 @@
             height: 100%;
             width: 0%;
             background: linear-gradient(90deg, #00ff00, #00ffff);
-            box-shadow: 0 0 6px #00ff00;
+            box-shadow: none;
             transition: width 0.25s linear;
             position: relative;
         }
@@ -1422,7 +1392,7 @@
         .crt-vol-bar {
             width: 9px;
             background: #00ff00;
-            box-shadow: 0 0 6px #00ff00;
+            box-shadow: none;
             transition: height 0.1s ease, background 0.1s, box-shadow 0.1s;
             border-radius: 1px 1px 0 0;
         }
@@ -1596,7 +1566,7 @@
                                 </div>
                                 <div class="smpte-label">▶ SELECT A SPOT ◀<br><span style="font-size:1rem;letter-spacing:2px;">[ WAITING FOR SELECTION... ]</span></div>
                             </div>
-                            <video id="videoPlayer" style="display: none;">
+                            <video id="videoPlayer" preload="none" style="display: none;">
                                 Your browser does not support the video tag.
                             </video>
                             <div class="static-overlay" id="staticOverlay">
@@ -1947,6 +1917,22 @@
         })();
 
         // ── LOAD SPOT ────────────────────────────────────────────────────────
+        function startVideo(src) {
+            // Stop any current playback cleanly before switching source
+            videoPlayer.pause();
+            videoPlayer.removeAttribute('src');
+            videoPlayer.load();
+
+            videoPlayer.src = src;
+            videoPlayer.load();
+
+            const onReady = () => {
+                videoPlayer.removeEventListener('canplay', onReady);
+                videoPlayer.play().catch(() => {});
+            };
+            videoPlayer.addEventListener('canplay', onReady);
+        }
+
         function loadSpot(index) {
             if (index < 0 || index >= CONFIG.spots.length) return;
             currentSpotIndex = index;
@@ -1959,21 +1945,18 @@
             items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
             showChannel();
+            videoTitle.textContent = spot.name;
 
             if (staticToggle.checked) {
                 runStatic(550, () => {
-                    videoPlayer.src = spot.video;
                     videoPlayer.style.display = 'block';
                     placeholder.style.display = 'none';
-                    videoTitle.textContent = spot.name;
-                    videoPlayer.play().catch(() => {});
+                    startVideo(spot.video);
                 });
             } else {
-                videoPlayer.src = spot.video;
                 videoPlayer.style.display = 'block';
                 placeholder.style.display = 'none';
-                videoTitle.textContent = spot.name;
-                videoPlayer.play().catch(() => {});
+                startVideo(spot.video);
             }
         }
 
