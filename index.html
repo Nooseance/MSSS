@@ -26,20 +26,61 @@
             gap: 0;
         }
         
-        /* CRT Container */
-        .crt-container {
-            position: relative;
-            width: 90vw;
-            max-width: 1500px;
-            height: 80vh;
-            background: #0a0a0a;
-            border: 10px solid #4a4a4a;
-            border-radius: 20px 20px 0px 0px;
-            box-shadow: 
-                inset 0 0 50px rgba(0, 255, 0, 0.1),
-                0 0 100px rgba(0, 0, 0, 0.8);
-            overflow: hidden;
-        }
+/* CRT Container */
+.crt-container {
+    position: relative;
+    width: 100%;
+    max-width: 95%;
+    height: 95%;
+    background: #0a0a0a;
+    border: 5px solid transparent;
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: 
+        inset 0 0 50px rgba(0, 255, 0, 0.2),
+        0 0 30px rgba(0, 255, 0, 0.3);
+    overflow: hidden;
+    
+    /* CRT-style green gradient border */
+    background: 
+        linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+        linear-gradient(180deg, 
+            #00ff00 0%, 
+            #ff00ff 25%, 
+            #00ffff 50%, 
+			#00ffff 75%,
+            #ffff00 100%
+        ) border-box;
+    border-color: transparent;
+    
+    /* scanline effect */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 255, 0, 0.03) 0px,
+            rgba(0, 0, 0, 0.1) 2px,
+            transparent 3px
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+}
+
+/* Add flicker animation */
+@keyframes crt-flicker {
+    0% { opacity: 1; }
+    50% { opacity: 0.95; }
+    100% { opacity: 1; }
+}
+
+.crt-container {
+    animation: crt-flicker 0.50s infinite;
+}
         
         /* CRT Screen Effect */
         .crt-screen {
@@ -290,21 +331,33 @@
         
         /* Spot Menu */
         .spot-menu {
-            flex: 0 0 280px;
+            flex: 0 0 350px;
             background: rgba(0, 0, 0, 0.7);
             border: 3px solid #00ff00;
-            padding: 15px;
-            overflow-y: auto;
+            padding: 0;
+            overflow: hidden;
             max-height: 100%;
+            display: flex;
+            flex-direction: column;
         }
+
+        .spot-menu-sticky {
+            flex-shrink: 0;
+            padding: 10px 10px 0 10px;
+        }
+
+        .spot-list-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 10px 10px 10px;
+        }
+
+        .spot-list-scroll::-webkit-scrollbar { width: 12px; }
+        .spot-list-scroll::-webkit-scrollbar-track { background: #000; border: 1px solid #00ff00; }
+        .spot-list-scroll::-webkit-scrollbar-thumb { background: #00ff00; border: 2px solid #000; }
+        .spot-list-scroll::-webkit-scrollbar-thumb:hover { background: #ffff00; }
         
-        .spot-menu h2 {
-            color: #ffff00;
-            font-size: 2rem;
-            text-align: center;
-            margin-bottom: 15px;
-            text-shadow: 0 0 10px #ffff00;
-        }
+        .spot-menu-title-legacy { display: none; }
         
         .spot-item {
             background: rgba(0, 255, 0, 0.1);
@@ -357,7 +410,7 @@
             flex-direction: column;
             background: rgba(0, 0, 0, 0.7);
             border: 3px solid #00ffff;
-            padding: 15px;
+            padding: 10px;
             overflow: hidden;
         }
         
@@ -365,7 +418,7 @@
             font-size: 2rem;
             color: #ff00ff;
             text-align: center;
-            margin-bottom: 15px;
+            margin-bottom: 6px;
             padding: 10px;
             background: #1a001a;
             border: 2px solid #ff00ff;
@@ -394,7 +447,6 @@
             color: #02ff02;
             text-align: center;
             text-shadow: 0 0 20px #03c403;
-            animation: blink 1.5s infinite;
         }
         
         @keyframes blink {
@@ -425,69 +477,69 @@
             display: block;
         }
         
-        /* Scrollbar styling */
-        .spot-menu::-webkit-scrollbar {
-            width: 12px;
-        }
         
-        .spot-menu::-webkit-scrollbar-track {
-            background: #000;
-            border: 1px solid #00ff00;
-        }
-        
-        .spot-menu::-webkit-scrollbar-thumb {
-            background: #00ff00;
-            border: 2px solid #000;
-        }
-        
-        .spot-menu::-webkit-scrollbar-thumb:hover {
-            background: #ffff00;
-        }
-        
-        /* ========================================== */
-        /* NEW FEATURE STYLES */
-        /* ========================================== */
-
-        /* Random Spot Button — REMOVED */
-
-        /* Static toggle bar */
+        /* ── COMBINED CONTROLS BAR (static + loop + tracking) ─────────── */
         .static-toggle-bar {
             display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 10px;
-            padding: 7px 12px;
+            align-items: stretch;
+            flex-wrap: wrap;
+            gap: 0;
+            margin-bottom: 6px;
+            padding: 0;
             background: rgba(0,0,0,0.6);
             border: 2px solid #333;
-            font-size: 1.1rem;
-            color: #666;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        .static-toggle-bar:hover { border-color: #444; }
+
+        /* Each labelled group inside the bar */
+        .ctrl-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            flex-shrink: 0;
+        }
+
+        /* Tracking section stretches to fill leftover space */
+        .ctrl-section.tracking-section {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        /* Vertical divider — full bar height via align-items: stretch */
+        .ctrl-divider {
+            width: 1px;
+            background: #2a2a2a;
+            flex-shrink: 0;
+            align-self: stretch;
+        }
+
+        /* Labels */
+        .static-toggle-label,
+        .loop-toggle-label,
+        .tracking-label {
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 0.9rem;
             letter-spacing: 1px;
-            cursor: pointer;
-            user-select: none;
-            transition: border-color 0.2s;
         }
 
-        .static-toggle-bar:hover {
-            border-color: #555;
-        }
+        .static-toggle-label { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+        .loop-toggle-label   { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
+        .tracking-label      { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
 
-        .static-toggle-label {
-            color: #00ff00;
-            letter-spacing: 2px;
-            font-size: 1.1rem;
-            text-shadow: 0 0 6px #00ff00;
-            user-select: none;
-        }
+        .toggle-icon { font-size: 0.85rem; }
 
-        .toggle-icon {
-            font-size: 1rem;
-        }
-
-        /* Hide real checkbox */
+        /* Toggle switch — smaller than before */
         .toggle-switch-wrap {
             position: relative;
             display: inline-flex;
             align-items: center;
+            cursor: pointer;
+            flex-shrink: 0;
         }
 
         .toggle-switch-wrap input[type="checkbox"] {
@@ -499,8 +551,8 @@
 
         .toggle-track {
             display: inline-block;
-            width: 44px;
-            height: 22px;
+            width: 32px;
+            height: 16px;
             background: #1a1a1a;
             border: 2px solid #444;
             border-radius: 0;
@@ -513,8 +565,8 @@
             position: absolute;
             top: 2px;
             left: 2px;
-            width: 14px;
-            height: 14px;
+            width: 8px;
+            height: 8px;
             background: #444;
             transition: transform 0.2s, background 0.2s;
         }
@@ -522,42 +574,120 @@
         input[type="checkbox"]:checked + .toggle-track {
             background: rgba(0,255,0,0.15);
             border-color: #00ff00;
-            box-shadow: 0 0 8px rgba(0,255,0,0.4);
+            box-shadow: 0 0 6px rgba(0,255,0,0.4);
         }
 
         input[type="checkbox"]:checked + .toggle-track .toggle-thumb {
-            transform: translateX(22px);
+            transform: translateX(16px);
             background: #00ff00;
-            box-shadow: 0 0 6px #00ff00;
+            box-shadow: 0 0 4px #00ff00;
         }
 
-        .toggle-status {
-            font-size: 1.1rem;
-            color: #00ff00;
-            text-shadow: 0 0 6px #00ff00;
-            letter-spacing: 2px;
-            min-width: 30px;
+        input[type="checkbox"]#loopToggle:checked + .toggle-track {
+            background: rgba(255,0,255,0.15);
+            border-color: #ff00ff;
+            box-shadow: 0 0 6px rgba(255,0,255,0.4);
         }
 
-        .toggle-status.off {
-            color: #444;
-            text-shadow: none;
+        input[type="checkbox"]#loopToggle:checked + .toggle-track .toggle-thumb {
+            transform: translateX(16px);
+            background: #ff00ff;
+            box-shadow: 0 0 4px #ff00ff;
+        }
+
+        .toggle-status,
+        #loopStatus {
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            min-width: 22px;
+            flex-shrink: 0;
+        }
+
+        .toggle-status     { color: #00ff00; text-shadow: 0 0 4px #00ff00; }
+        .toggle-status.off { color: #444;    text-shadow: none; }
+        #loopStatus        { color: #ff00ff; text-shadow: 0 0 4px #ff00ff; }
+        #loopStatus.off    { color: #444;    text-shadow: none; }
+
+        /* Tracking slider — fills available space, never overflows */
+        #trackingSlider {
+            flex: 1;
+            min-width: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #111;
+            border: 1px solid #333;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #trackingSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 13px;
+            height: 13px;
+            background: #ff00ff;
+            border: 2px solid #ffff00;
+            cursor: pointer;
+            box-shadow: 0 0 5px #ff00ff;
+        }
+
+        #trackingSlider::-moz-range-thumb {
+            width: 13px;
+            height: 13px;
+            background: #ff00ff;
+            border: 2px solid #ffff00;
+            cursor: pointer;
+            box-shadow: 0 0 5px #ff00ff;
+        }
+
+        #trackingReset {
+            font-family: 'VT323', monospace;
+            font-size: 0.9rem;
+            color: #ffff00;
+            border: 1px solid #ffff00;
+            background: transparent;
+            padding: 1px 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.4;
+        }
+
+        #trackingReset:hover {
+            background: rgba(255,255,0,0.15);
+            box-shadow: 0 0 6px #ffff00;
+        }
+
+        /* Responsive: tracking section wraps to its own row below 640px */
+        @media screen and (max-width: 640px) {
+            .ctrl-section { padding: 4px 8px; gap: 5px; }
+            .ctrl-section.tracking-section {
+                flex-basis: 100%;
+                border-top: 1px solid #222;
+            }
+            .ctrl-divider { display: none; }
         }
 
         /* Ticker footer (outside CRT) */
         .ticker-footer {
-            width: 90vw;
-            max-width: 1500px;
+            width: 100%;
+            max-width: 95%;
             background: #000;
-            border-top: 2px solid #ff00ff;
-            border-bottom: 2px solid #ff00ff;
-            border-left: 10px solid #4a4a4a;
-            border-right: 10px solid #4a4a4a;
+            border: 5px solid #ff00ff;
             padding: 7px 0;
             overflow: hidden;
             white-space: nowrap;
             flex-shrink: 0;
             position: relative;
+            cursor: pointer;
+        }
+
+        /* Flash on click */
+        .ticker-footer.ticker-flash {
+            border-color: #ffff00;
+            box-shadow: 0 0 18px rgba(255,255,0,0.6);
         }
 
         .ticker-content {
@@ -598,8 +728,8 @@
             opacity: 1;
         }
 
-        /* Konami easter egg overlay */
-        .konami-overlay {
+        /* EASTER easter egg overlay */
+        .EASTER-overlay {
             display: none;
             position: absolute;
             top: 0; left: 0;
@@ -612,24 +742,24 @@
             text-align: center;
         }
 
-        .konami-overlay.active {
+        .EASTER-overlay.active {
             display: flex;
-            animation: konamiFlash 0.3s;
+            animation: EASTERFlash 0.3s;
         }
 
-        @keyframes konamiFlash {
+        @keyframes EASTERFlash {
             0%,100% { background: rgba(0,0,0,0.92); }
             50% { background: rgba(255,0,255,0.3); }
         }
 
-        .konami-text {
+        .EASTER-text {
             font-size: 3rem;
             animation: rainbowText 1s linear infinite, glitch 0.5s infinite;
             letter-spacing: 4px;
             margin-bottom: 20px;
         }
 
-        .konami-subtext {
+        .EASTER-subtext {
             font-size: 1.8rem;
             color: #00ffff;
             letter-spacing: 3px;
@@ -638,7 +768,7 @@
             animation: blink 1s infinite;
         }
 
-        .konami-close {
+        .EASTER-close {
             font-size: 1.3rem;
             color: #ffff00;
             border: 2px solid #ffff00;
@@ -650,7 +780,7 @@
             transition: all 0.2s;
         }
 
-        .konami-close:hover {
+        .EASTER-close:hover {
             background: rgba(255,255,0,0.2);
             box-shadow: 0 0 20px #ffff00;
         }
@@ -700,6 +830,54 @@
             box-shadow: 0 0 20px #ffff00;
         }
 
+        /* Social links panel overlaid on easter video */
+        .easter-links {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            z-index: 3001;
+            padding: 0 20px;
+        }
+
+        .easter-link-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #000;
+            background: #00ffff;
+            border: 3px solid #fff;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s;
+            box-shadow: 0 0 12px rgba(0,255,255,0.5), 3px 3px 0 rgba(0,0,0,0.8);
+            white-space: nowrap;
+        }
+
+        .easter-link-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.07) translateY(-2px);
+            box-shadow: 0 0 25px rgba(0,255,255,0.9), 3px 3px 0 rgba(0,0,0,0.8);
+        }
+
+        .easter-link-btn:active {
+            transform: scale(0.97) translateY(0);
+        }
+
+        .easter-link-icon {
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
         @keyframes rainbowText {
             0%   { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
             16%  { color: #ff8800; text-shadow: 0 0 20px #ff8800; }
@@ -743,7 +921,7 @@
                 width: 95vw;
                 height: auto;
                 min-height: 90vh;
-                border: 6px solid #4a4a4a;
+                border: 2px solid #00ff00;
                 border-radius: 12px;
             }
             
@@ -796,13 +974,16 @@
                 flex: none;
                 width: 100%;
                 max-height: 40vh;
-                padding: 12px;
+                padding: 0;
                 border: 2px solid;
             }
+
+            .spot-menu-sticky { padding: 8px 8px 0 8px; }
+            .spot-list-scroll { padding: 6px 8px 8px 8px; }
             
-            .spot-menu h2 {
-                font-size: 1.5rem;
-                margin-bottom: 12px;
+            .spot-menu-header {
+                font-size: 1.15rem;
+                margin-bottom: 8px;
             }
             
             .spot-item {
@@ -844,9 +1025,7 @@
             }
             
             /* Scrollbar for mobile */
-            .spot-menu::-webkit-scrollbar {
-                width: 8px;
-            }
+            .spot-list-scroll::-webkit-scrollbar { width: 8px; }
         }
         
         /* Extra small screens (phones in portrait) */
@@ -877,7 +1056,7 @@
                 letter-spacing: 1px;
             }
             
-            .spot-menu h2 {
+            .spot-menu-header {
                 font-size: 1.3rem;
             }
             
@@ -923,6 +1102,375 @@
             }
         }
         
+        /* ── SPOT MENU HEADER ─────────────────────────────────────────── */
+        .spot-menu-header {
+            font-size: 1.45rem;
+            color: #ffff00;
+            text-align: center;
+            padding: 8px 6px;
+            background: #1a1a00;
+            border: 2px solid #ffff00;
+            text-shadow: 0 0 12px #ffff00;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* ── SMPTE COLOR BARS ─────────────────────────────────────────── */
+        .smpte-bars {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .smpte-top {
+            flex: 0 0 67%;
+            display: flex;
+            width: 100%;
+        }
+
+        .smpte-top .bar { flex: 1; }
+        .smpte-top .bar:nth-child(1) { background: #c0c0c0; }
+        .smpte-top .bar:nth-child(2) { background: #c0c000; }
+        .smpte-top .bar:nth-child(3) { background: #00c0c0; }
+        .smpte-top .bar:nth-child(4) { background: #00c000; }
+        .smpte-top .bar:nth-child(5) { background: #c000c0; }
+        .smpte-top .bar:nth-child(6) { background: #c00000; }
+        .smpte-top .bar:nth-child(7) { background: #0000c0; }
+
+        .smpte-mid {
+            flex: 0 0 8%;
+            display: flex;
+            width: 100%;
+        }
+
+        .smpte-mid .bar { flex: 1; }
+        .smpte-mid .bar:nth-child(1) { background: #0000c0; }
+        .smpte-mid .bar:nth-child(2) { background: #111111; }
+        .smpte-mid .bar:nth-child(3) { background: #c000c0; }
+        .smpte-mid .bar:nth-child(4) { background: #111111; }
+        .smpte-mid .bar:nth-child(5) { background: #00c0c0; }
+        .smpte-mid .bar:nth-child(6) { background: #111111; }
+        .smpte-mid .bar:nth-child(7) { background: #c0c0c0; }
+
+        .smpte-bottom {
+            flex: 1;
+            display: flex;
+            width: 100%;
+        }
+
+        .smpte-bottom .seg-left  { flex: 0 0 40%; background: #001aff; }
+        .smpte-bottom .seg-white { flex: 0 0 14%; background: #ffffff; }
+        .smpte-bottom .seg-pluge { flex: 0 0 14%; background: #090909; }
+        .smpte-bottom .seg-black { flex: 1;        background: #000000; }
+
+        .smpte-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.6rem;
+            color: #fff;
+            text-shadow: 0 0 10px #000, 0 0 20px #000;
+            letter-spacing: 4px;
+            background: rgba(0,0,0,0.55);
+            padding: 8px 22px;
+            border: 2px solid rgba(255,255,255,0.3);
+            animation: blink 2s infinite;
+            pointer-events: none;
+            z-index: 5;
+            text-align: center;
+        }
+
+        /* ── TIMECODE OVERLAY ─────────────────────────────────────────── */
+        .timecode-overlay {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 0 0 6px #fff, 0 0 12px rgba(0,255,0,0.6);
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 50;
+            display: none;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 8px;
+        }
+
+        .timecode-overlay.visible {
+            display: block;
+        }
+
+        .timecode-icon {
+            display: inline-block;
+            animation: spinReel 2s linear infinite;
+        }
+
+        @keyframes spinReel {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        /* ── TRACKING SLIDER — styles now inside .static-toggle-bar above ── */
+
+        /* ── VHS CUSTOM CONTROLS ──────────────────────────────────────── */
+        .vhs-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #00ffff;
+            flex-shrink: 0;
+			margin-top: 6px;
+        }
+
+        /* Row 1: transport — Row 2: tape bar */
+        .vhs-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+        }
+
+        /* Split row: left group | spacer | right group */
+        .vhs-row-split {
+            display: flex;
+            align-items: center;
+            padding: 5px 8px;
+            gap: 6px;
+        }
+
+        .vhs-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vhs-group-spacer {
+            flex: 1;
+        }
+
+        .vhs-row + .vhs-row,
+        .vhs-row-split + .vhs-row,
+        .vhs-row + .vhs-row-split {
+            border-top: 1px solid #111;
+        }
+
+        .vhs-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            background: rgba(0,255,255,0.07);
+            /* Fixed height + line-height so emoji/text never shifts the row */
+            height: 28px;
+            line-height: 24px;
+            padding: 0 10px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vhs-btn:hover {
+            background: rgba(0,255,255,0.2);
+            box-shadow: 0 0 10px #00ffff;
+            color: #fff;
+        }
+
+        .vhs-btn:active { transform: scale(0.95); }
+
+        #playPauseBtn {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0,255,0,0.07);
+            width: 96px;   /* fixed — never shifts */
+        }
+
+        #playPauseBtn:hover {
+            background: rgba(0,255,0,0.2);
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Cassette reel progress */
+        .vhs-reel-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .reel {
+            width: 26px;
+            height: 26px;
+            border: 3px solid #00ffff;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            background: #000;
+        }
+
+        .reel-left  { animation: none; }
+        .reel-right { animation: none; }
+
+        .reel.spinning {
+            animation: reelSpin 1.2s linear infinite;
+        }
+
+        .reel-right.spinning {
+            animation: reelSpin 1.2s linear infinite reverse;
+        }
+
+        @keyframes reelSpin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .vhs-tape-track {
+            flex: 1;
+            height: 14px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .vhs-tape-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            box-shadow: 0 0 6px #00ff00;
+            transition: width 0.25s linear;
+            position: relative;
+        }
+
+        /* Sprocket holes on the track */
+        .vhs-tape-track::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 18px,
+                rgba(0,0,0,0.5) 18px,
+                rgba(0,0,0,0.5) 20px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ── CRT VOLUME INDICATOR ─────────────────────────────────────── */
+        .crt-volume-hud {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            pointer-events: none;
+            z-index: 60;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .crt-volume-hud.visible {
+            opacity: 1;
+        }
+
+        .crt-vol-label {
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            color: #00ff00;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px #00ff00, 0 0 16px rgba(0,255,0,0.4);
+        }
+
+        .crt-vol-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 28px;
+        }
+
+        .crt-vol-bar {
+            width: 9px;
+            background: #00ff00;
+            box-shadow: 0 0 6px #00ff00;
+            transition: height 0.1s ease, background 0.1s, box-shadow 0.1s;
+            border-radius: 1px 1px 0 0;
+        }
+
+        /* muted state — all bars dimmed */
+        .crt-volume-hud.muted .crt-vol-bar {
+            background: #333;
+            box-shadow: none;
+        }
+
+        .crt-vol-bar.peak {
+            background: #ff4400;
+            box-shadow: 0 0 8px #ff4400;
+        }
+
+        /* ── MUTE BUTTON ACCENT ──────────────────────────────────────── */
+        #muteBtn {
+            color: #ffff00;
+            border-color: #ffff00;
+            background: rgba(255,255,0,0.07);
+            width: 96px;   /* matches play/pause — never shifts */
+        }
+        #muteBtn:hover {
+            background: rgba(255,255,0,0.2);
+            box-shadow: 0 0 10px #ffff00;
+            color: #fff;
+        }
+
+        #volDownBtn, #volUpBtn {
+            color: #00ffff;
+            border-color: #00ffff;
+            width: 60px;
+        }
+
+        /* ── RESPONSIVE ADDITIONS ─────────────────────────────────────── */
+        @media screen and (max-width: 768px) {
+            .spot-menu-header { font-size: 1.2rem; padding: 6px; }
+            .timecode-overlay { font-size: 1.1rem; bottom: 8px; }
+            .vhs-btn { font-size: 1rem; height: 26px; padding: 0 7px; }
+            #playPauseBtn, #muteBtn { width: 80px; }
+            #volDownBtn, #volUpBtn { width: 50px; }
+            .vhs-row { gap: 4px; padding: 4px 6px; }
+            .reel { width: 18px; height: 18px; }
+            .reel::before { width: 6px; height: 6px; }
+            .tracking-label { font-size: 0.9rem; }
+            .crt-vol-bar { width: 7px; }
+        }
+
         /* Tablet portrait */
         @media screen and (min-width: 769px) and (max-width: 1024px) {
             .header h1 {
@@ -938,7 +1486,7 @@
                 flex: 0 0 240px;
             }
             
-            .spot-menu h2 {
+            .spot-menu-header {
                 font-size: 1.7rem;
             }
             
@@ -961,6 +1509,7 @@
     <!-- Easter Egg Video Screen -->
     <div class="easter-video-overlay" id="easterVideoOverlay">
         <video id="easterVideo" loop playsinline></video>
+        <div class="easter-links" id="easterLinks"></div>
         <button class="easter-close-btn" id="easterCloseBtn">[ ✕ CLOSE ]</button>
     </div>
 
@@ -976,47 +1525,119 @@
                     <div class="subtitle">// SKATE SPOT SHOWCASE //</div>
                 </div>
                 
-                <!-- Konami Easter Egg Overlay -->
-                <div class="konami-overlay" id="konamiOverlay">
-                    <div class="konami-text">🛹 SKATE OR DIE 🛹</div>
-                    <div class="konami-subtext">// CHEAT CODE ACTIVATED //<br>YOU FOUND THE SECRET!</div>
-                    <button class="konami-close" id="konamiClose">[ OK LET'S SKATE ]</button>
+                <!-- EASTER Easter Egg Overlay -->
+                <div class="EASTER-overlay" id="EASTEROverlay">
+                    <div class="EASTER-text">🛹 SKATE OR DIE 🛹</div>
+                    <div class="EASTER-subtext">// CHEAT CODE ACTIVATED //<br>YOU FOUND THE SECRET!</div>
+                    <button class="EASTER-close" id="EASTERClose">[ OK LET'S SKATE ]</button>
                 </div>
 
                 <div class="main-layout">
                     <div class="spot-menu">
-                        <h2>[ SELECT SPOT ]</h2>
-                        <div id="spotList">
-                            <!-- Spots will be loaded from config below -->
+                        <div class="spot-menu-sticky">
+                            <div class="spot-menu-header" id="spotMenuHeader">[ SELECT A SPOT ] [ 0 ]</div>
+                        </div>
+                        <div class="spot-list-scroll">
+                            <div id="spotList">
+                                <!-- Spots will be loaded from config below -->
+                            </div>
                         </div>
                     </div>
                     
                     <div class="video-container">
                         <div class="video-title" id="videoTitle">SELECT A SPOT</div>
                         <div class="static-toggle-bar" id="staticToggleBar">
-                            <span class="static-toggle-label">
-                                <span class="toggle-icon">📡</span> CHANNEL STATIC
-                            </span>
-                            <div class="toggle-switch-wrap">
-                                <input type="checkbox" id="staticToggle">
-                                <span class="toggle-track">
-                                    <span class="toggle-thumb"></span>
-                                </span>
+                            <!-- Static section -->
+                            <div class="ctrl-section">
+                                <span class="static-toggle-label"><span class="toggle-icon">📡</span> STATIC</span>
+                                <div class="toggle-switch-wrap" id="toggleSwitchWrap">
+                                    <input type="checkbox" id="staticToggle">
+                                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                                </div>
+                                <span class="toggle-status" id="toggleStatus">OFF</span>
                             </div>
-                            <span class="toggle-status" id="toggleStatus">OFF</span>
+                            <div class="ctrl-divider"></div>
+                            <!-- Loop section -->
+                            <div class="ctrl-section">
+                                <span class="loop-toggle-label">🔁 LOOP</span>
+                                <div class="toggle-switch-wrap" id="loopSwitchWrap">
+                                    <input type="checkbox" id="loopToggle" checked>
+                                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                                </div>
+                                <span id="loopStatus">ON</span>
+                            </div>
+                            <div class="ctrl-divider"></div>
+                            <!-- Tracking section -->
+                            <div class="ctrl-section tracking-section">
+                                <span class="tracking-label">🎛 TRACKING</span>
+                                <input type="range" id="trackingSlider" min="0" max="100" value="0">
+                                <button id="trackingReset">[ RESET ]</button>
+                            </div>
                         </div>
                         <div class="video-wrapper">
                             <div class="placeholder" id="placeholder">
-                                ▶ CLICK A SPOT TO PREVIEW ◀<br><br>
-                                [ WAITING FOR SELECTION... ]
+                                <div class="smpte-bars">
+                                    <div class="smpte-top">
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                    <div class="smpte-mid">
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                    <div class="smpte-bottom">
+                                        <div class="seg-left"></div>
+                                        <div class="seg-white"></div>
+                                        <div class="seg-pluge"></div>
+                                        <div class="seg-black"></div>
+                                    </div>
+                                </div>
+                                <div class="smpte-label">▶ SELECT A SPOT ◀<br><span style="font-size:1rem;letter-spacing:2px;">[ WAITING FOR SELECTION... ]</span></div>
                             </div>
-                            <video id="videoPlayer" controls loop style="display: none;">
+                            <video id="videoPlayer" style="display: none;">
                                 Your browser does not support the video tag.
                             </video>
                             <div class="static-overlay" id="staticOverlay">
                                 <canvas id="staticCanvas"></canvas>
                             </div>
                             <div class="channel-display" id="channelDisplay">CH 00</div>
+                            <div class="timecode-overlay" id="timecodeOverlay">
+                                <span class="timecode-icon">📼</span> <span id="timecodeCurrentTime">00:00</span> / <span id="timecodeDuration">00:00</span>
+                            </div>
+                            <!-- CRT Volume HUD -->
+                            <div class="crt-volume-hud" id="crtVolumeHud">
+                                <div class="crt-vol-bars" id="crtVolBars"></div>
+                                <div class="crt-vol-label" id="crtVolLabel">VOL 10</div>
+                            </div>
+                        </div>
+                        <!-- VHS custom scrubber controls -->
+                        <div class="vhs-controls">
+                            <!-- Row 1: Left = transport, Right = volume -->
+                            <div class="vhs-row-split">
+                                <div class="vhs-btn-group">
+                                    <button class="vhs-btn" id="rewBtn">◄◄ REW</button>
+                                    <button class="vhs-btn" id="playPauseBtn">► PLAY</button>
+                                    <button class="vhs-btn" id="ffBtn">FF ►►</button>
+                                </div>
+                                <div class="vhs-group-spacer"></div>
+                                <div class="vhs-btn-group">
+                                    <button class="vhs-btn" id="volDownBtn">VOL −</button>
+                                    <button class="vhs-btn" id="volUpBtn">VOL +</button>
+                                    <button class="vhs-btn" id="muteBtn">🔊  MUTE </button>
+                                </div>
+                            </div>
+                            <!-- Row 2: Cassette reel progress bar -->
+                            <div class="vhs-row">
+                                <div class="vhs-reel-wrap">
+                                    <div class="reel reel-left" id="reelLeft"></div>
+                                    <div class="vhs-tape-track" id="vhsTapeTrack">
+                                        <div class="vhs-tape-fill" id="vhsTapeFill"></div>
+                                    </div>
+                                    <div class="reel reel-right" id="reelRight"></div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1104,10 +1725,28 @@
             ],
 
             // ── TICKER PHRASES ─────────────────────────────────────────────
-            // Add, remove, or edit lines below. Order is randomized automatically.
+            // Each entry can be a plain string, OR an object with:
+            //   text:  the phrase to display
+            //   color: main text color  (any CSS color, e.g. "#ff00ff" or "red")
+            //   glow:  glow/shadow color (defaults to same as color if omitted)
+            // Plain strings fall back to the default cyan color.
             tickerPhrases: [
-                "🛹  SMASH [R] TO SEND IT TO A RANDOM SPOT — NO BAILING ALLOWED",
-                "🕹️  ↑↑↓↓←→←→BA  —  THERE'S A SECRET IN HERE. FIND IT.",
+                { text: "🛹  SMASH [R] TO SEND IT TO A RANDOM SPOT — NO BAILING ALLOWED", color: "#00ff00", glow: "#00ff00" },
+                { text: "🕹️ Enter ↑↑↓↓←→←→BA  —  THERE'S A SECRET IN HERE.",          color: "#00ffff", glow: "#00ffff" },
+                { text: "🚫❌NO TIMMYS ALLOWED❌🚫",                                     color: "#c00000", glow: "#c00000" },
+                { text: "😤‍BLINKER BREAK️💨",                                              color: "#ffff00", glow: "#ffff00" },
+                { text: "🎫CLICK THE -TOUR DE MAUI- TITLE ABOVE TO JOIN THE TOUR🎫",      color: "#ff00ff", glow: "#ff00ff" },
+            ],
+
+            // ── EASTER EGG LINKS ───────────────────────────────────────────
+            // Shown as buttons overlaid on the easter egg video.
+            // Add as many as you want. Each needs: label, url, and icon (emoji or text).
+            easterLinks: [
+                { icon: "📺", label: "TWITCH",   url: "https://www.twitch.tv/MauiKrouse" },
+                { icon: "▶️",  label: "YOUTUBE",  url: "https://www.youtube.com/@MauiKrouseTV/videos" },
+                { icon: "💬", label: "DISCORD",  url: "https://discord.gg/9aeJB9XZ9D" },
+                { icon: "👕", label: "MERCH",    url: "https://mauikrouse.com/" },
+                { icon: "🌲", label: "LINKTREE", url: "https://linktr.ee/mauikrouse" },
             ]
         };
         
@@ -1122,11 +1761,12 @@
         const staticCanvas = document.getElementById('staticCanvas');
         const spotList = document.getElementById('spotList');
         const mainTitle = document.getElementById('mainTitle');
-        const konamiOverlay = document.getElementById('konamiOverlay');
-        const konamiClose = document.getElementById('konamiClose');
+        const EASTEROverlay = document.getElementById('EASTEROverlay');
+        const EASTERClose = document.getElementById('EASTERClose');
         const easterVideoOverlay = document.getElementById('easterVideoOverlay');
         const easterVideo = document.getElementById('easterVideo');
         const easterCloseBtn = document.getElementById('easterCloseBtn');
+        const easterLinksEl = document.getElementById('easterLinks');
         const crtContainer = document.querySelector('.crt-container');
         const tickerEl = document.getElementById('tickerContent');
         const channelDisplay = document.getElementById('channelDisplay');
@@ -1150,15 +1790,16 @@
             try { localStorage.setItem('staticEnabled', on ? '1' : '0'); } catch(e) {}
         }
 
-        // Load saved state (default OFF)
+        // Load saved state (default ON)
         (function() {
-            let saved = '0';
-            try { saved = localStorage.getItem('staticEnabled') ?? '0'; } catch(e) {}
+            let saved = '1';
+            try { saved = localStorage.getItem('staticEnabled') ?? '1'; } catch(e) {}
             applyToggleState(saved === '1');
         })();
 
-        // Clicking anywhere on the bar toggles
-        staticToggleBar.addEventListener('click', function() {
+        // Only the toggle switch itself toggles — not the whole bar
+        document.getElementById('toggleSwitchWrap').addEventListener('click', function(e) {
+            e.stopPropagation();
             applyToggleState(!staticToggle.checked);
         });
 
@@ -1237,8 +1878,19 @@
 
         // ── TICKER ───────────────────────────────────────────────────────────
         (function runTicker() {
-            const phrases = [...CONFIG.tickerPhrases];
+            const tickerFooter = tickerEl.parentElement;
+            const DEFAULT_COLOR = '#00ffff';
+            const DEFAULT_GLOW  = '#00ffff';
+
+            // Normalise every entry to { text, color, glow }
+            const phrases = CONFIG.tickerPhrases.map(p =>
+                typeof p === 'string'
+                    ? { text: p, color: DEFAULT_COLOR, glow: DEFAULT_GLOW }
+                    : { text: p.text, color: p.color || DEFAULT_COLOR, glow: p.glow || p.color || DEFAULT_GLOW }
+            );
+
             let idx = 0;
+            let skipping = false;
 
             function shuffle(arr) {
                 for (let i = arr.length - 1; i > 0; i--) {
@@ -1248,12 +1900,19 @@
             }
             shuffle(phrases);
 
+            function applyPhrase(entry) {
+                tickerEl.textContent = entry.text;
+                tickerEl.style.color      = entry.color;
+                tickerEl.style.textShadow = `0 0 8px ${entry.glow}, 0 0 16px ${entry.glow}44`;
+            }
+
             function scrollPhrase() {
-                const text = phrases[idx % phrases.length];
+                skipping = false;
+                const entry = phrases[idx % phrases.length];
                 idx++;
                 if (idx > 0 && idx % phrases.length === 0) shuffle(phrases);
 
-                tickerEl.textContent = text;
+                applyPhrase(entry);
                 tickerEl.style.animation = 'none';
                 tickerEl.offsetWidth; // reflow
                 const pxPerSec = 90;
@@ -1264,6 +1923,27 @@
 
             tickerEl.addEventListener('animationend', scrollPhrase);
             scrollPhrase();
+
+            // Click ticker bar → jump to a new random phrase immediately
+            tickerFooter.addEventListener('click', () => {
+                if (skipping) return;
+                skipping = true;
+
+                // Pick a random phrase that isn't the current one
+                let newIdx;
+                do { newIdx = Math.floor(Math.random() * phrases.length); }
+                while (phrases.length > 1 && newIdx === (idx - 1 + phrases.length) % phrases.length);
+                idx = newIdx;
+
+                // Brief border flash
+                tickerFooter.classList.add('ticker-flash');
+                setTimeout(() => tickerFooter.classList.remove('ticker-flash'), 300);
+
+                // Restart with new phrase
+                tickerEl.removeEventListener('animationend', scrollPhrase);
+                scrollPhrase();
+                tickerEl.addEventListener('animationend', scrollPhrase);
+            });
         })();
 
         // ── LOAD SPOT ────────────────────────────────────────────────────────
@@ -1297,12 +1977,24 @@
             }
         }
 
-        // ── KONAMI CODE ─────────────────────────────────────────────────────
-        const konamiSequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
-        let konamiIndex = 0;
+        // ── EASTER CODE ─────────────────────────────────────────────────────
+        const EASTERSequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let EASTERIndex = 0;
 
-        konamiClose.addEventListener('click', () => {
-            konamiOverlay.classList.remove('active');
+        EASTERClose.addEventListener('click', () => {
+            EASTEROverlay.classList.remove('active');
+            // Build social links from config (once)
+            if (easterLinksEl.children.length === 0) {
+                CONFIG.easterLinks.forEach(link => {
+                    const a = document.createElement('a');
+                    a.className = 'easter-link-btn';
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.innerHTML = `<span class="easter-link-icon">${link.icon}</span>${link.label}`;
+                    easterLinksEl.appendChild(a);
+                });
+            }
             // Launch the easter egg video
             easterVideo.src = 'Clips/_EASTER.mp4';
             easterVideoOverlay.classList.add('active');
@@ -1352,33 +2044,260 @@
 
         // ── KEYBOARD CONTROLS ────────────────────────────────────────────────
         document.addEventListener('keydown', function(e) {
-            if (e.key === konamiSequence[konamiIndex]) {
-                konamiIndex++;
-                if (konamiIndex === konamiSequence.length) {
-                    konamiIndex = 0;
+            if (e.key === EASTERSequence[EASTERIndex]) {
+                EASTERIndex++;
+                if (EASTERIndex === EASTERSequence.length) {
+                    EASTERIndex = 0;
                     crtContainer.classList.remove('shake');
                     void crtContainer.offsetWidth;
                     crtContainer.classList.add('shake');
                     setTimeout(() => {
-                        konamiOverlay.classList.add('active');
+                        EASTEROverlay.classList.add('active');
                         crtContainer.classList.remove('shake');
                     }, 500);
                 }
             } else {
-                konamiIndex = 0;
+                EASTERIndex = 0;
             }
             if (e.key === 'r' || e.key === 'R') pickRandom();
         });
 
-        // Initialize on page load
+        // ── SPOT COUNT ───────────────────────────────────────────────────
+        function updateSpotCount() {
+            const total = CONFIG.spots.length;
+            document.getElementById('spotMenuHeader').textContent = `[ SELECT A SPOT ] [ 1-${total} ]`;
+        }
+
+        // ── TIMECODE OVERLAY ─────────────────────────────────────────────
+        const timecodeOverlay   = document.getElementById('timecodeOverlay');
+        const timecodeCurrentEl = document.getElementById('timecodeCurrentTime');
+        const timecodeDurEl     = document.getElementById('timecodeDuration');
+
+        function fmtTime(s) {
+            if (isNaN(s)) return '00:00';
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+        }
+
+        // ── CUSTOM VHS CONTROLS ──────────────────────────────────────────
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const rewBtn       = document.getElementById('rewBtn');
+        const ffBtn        = document.getElementById('ffBtn');
+        const vhsTapeTrack = document.getElementById('vhsTapeTrack');
+        const vhsTapeFill  = document.getElementById('vhsTapeFill');
+        const reelLeft     = document.getElementById('reelLeft');
+        const reelRight    = document.getElementById('reelRight');
+
+        videoPlayer.addEventListener('loadedmetadata', () => {
+            timecodeDurEl.textContent = fmtTime(videoPlayer.duration);
+            timecodeOverlay.classList.add('visible');
+        });
+
+        videoPlayer.addEventListener('timeupdate', () => {
+            timecodeCurrentEl.textContent = fmtTime(videoPlayer.currentTime);
+            // Update tape fill
+            const pct = videoPlayer.duration ? (videoPlayer.currentTime / videoPlayer.duration) * 100 : 0;
+            vhsTapeFill.style.width = pct + '%';
+            // Reel spin speed based on progress
+            const speed = Math.max(0.3, 2.5 - (pct / 100) * 2);
+            reelLeft.style.animationDuration  = speed + 's';
+            reelRight.style.animationDuration = speed + 's';
+        });
+
+        videoPlayer.addEventListener('play', () => {
+            playPauseBtn.textContent = '❙❙ PAUSE';
+            reelLeft.classList.add('spinning');
+            reelRight.classList.add('spinning');
+        });
+
+        videoPlayer.addEventListener('pause', () => {
+            playPauseBtn.textContent = '► PLAY';
+            reelLeft.classList.remove('spinning');
+            reelRight.classList.remove('spinning');
+        });
+
+        videoPlayer.addEventListener('ended', () => {
+            if (videoPlayer.dataset.loopEnabled === '1') {
+                videoPlayer.currentTime = 0;
+                videoPlayer.play().catch(() => {});
+            } else {
+                playPauseBtn.textContent = '► PLAY';
+                reelLeft.classList.remove('spinning');
+                reelRight.classList.remove('spinning');
+            }
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!videoPlayer.src || videoPlayer.style.display === 'none') return;
+            videoPlayer.paused ? videoPlayer.play() : videoPlayer.pause();
+        });
+
+        rewBtn.addEventListener('click', () => {
+            if (!videoPlayer.src || videoPlayer.style.display === 'none') return;
+            videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 3);
+        });
+
+        ffBtn.addEventListener('click', () => {
+            if (!videoPlayer.src || videoPlayer.style.display === 'none') return;
+            videoPlayer.currentTime = Math.min(videoPlayer.duration || 0, videoPlayer.currentTime + 3);
+        });
+
+        // Click-to-seek on tape track
+        vhsTapeTrack.addEventListener('click', (e) => {
+            if (!videoPlayer.duration) return;
+            const rect = vhsTapeTrack.getBoundingClientRect();
+            const pct  = (e.clientX - rect.left) / rect.width;
+            videoPlayer.currentTime = pct * videoPlayer.duration;
+        });
+
+        // ── CRT VOLUME HUD ───────────────────────────────────────────────
+        const crtVolumeHud = document.getElementById('crtVolumeHud');
+        const crtVolBars   = document.getElementById('crtVolBars');
+        const crtVolLabel  = document.getElementById('crtVolLabel');
+        const muteBtn      = document.getElementById('muteBtn');
+        const volDownBtn   = document.getElementById('volDownBtn');
+        const volUpBtn     = document.getElementById('volUpBtn');
+        const videoWrapper = document.querySelector('.video-wrapper');
+
+        const VOL_STEPS = 20;   // number of bar segments
+        const VOL_PEAK  = 16;   // bars at/above this index turn red
+        let volHudTimeout = null;
+
+        // Build bar segments
+        for (let i = 0; i < VOL_STEPS; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'crt-vol-bar';
+            // Height scales from short (left) to tall (right)
+            const h = 4 + Math.round((i / (VOL_STEPS - 1)) * 24);
+            bar.style.height = h + 'px';
+            crtVolBars.appendChild(bar);
+        }
+
+        function updateVolHud() {
+            const vol = videoPlayer.volume;   // 0–1
+            const muted = videoPlayer.muted;
+            const filled = muted ? 0 : Math.round(vol * VOL_STEPS);
+            const bars = crtVolBars.querySelectorAll('.crt-vol-bar');
+            bars.forEach((bar, i) => {
+                const active = i < filled;
+                bar.style.background = active
+                    ? (i >= VOL_PEAK ? '#ff4400' : '#00ff00')
+                    : '#1a1a1a';
+                bar.style.boxShadow = active
+                    ? (i >= VOL_PEAK ? '0 0 8px #ff4400' : '0 0 6px #00ff00')
+                    : 'none';
+            });
+            crtVolLabel.textContent = muted ? '🔇 MUTE' : `VOL ${filled}`;
+            crtVolumeHud.classList.toggle('muted', muted);
+        }
+
+        function showVolHud() {
+            updateVolHud();
+            crtVolumeHud.classList.add('visible');
+            clearTimeout(volHudTimeout);
+            volHudTimeout = setTimeout(() => crtVolumeHud.classList.remove('visible'), 2000);
+        }
+
+        // Volume +/-
+        volUpBtn.addEventListener('click', () => {
+            videoPlayer.volume = Math.min(1, Math.round((videoPlayer.volume + 0.05) * 100) / 100);
+            if (videoPlayer.muted) { videoPlayer.muted = false; muteBtn.textContent = '🔊  MUTE '; }
+            showVolHud();
+        });
+
+        volDownBtn.addEventListener('click', () => {
+            videoPlayer.volume = Math.max(0, Math.round((videoPlayer.volume - 0.05) * 100) / 100);
+            showVolHud();
+        });
+
+        // Mute / Unmute
+        muteBtn.addEventListener('click', () => {
+            videoPlayer.muted = !videoPlayer.muted;
+            muteBtn.textContent = videoPlayer.muted ? '🔇 UNMUTE' : '🔊  MUTE ';
+            showVolHud();
+        });
+
+        // Init mute button state & volume
+        videoPlayer.volume = 1;
+        videoPlayer.muted  = false;
+        updateVolHud();
+
+        // ── FULLSCREEN — double-click video wrapper ───────────────────────
+        videoWrapper.addEventListener('dblclick', () => {
+            if (!document.fullscreenElement) {
+                const fn = videoWrapper.requestFullscreen || videoWrapper.webkitRequestFullscreen || videoWrapper.mozRequestFullScreen;
+                if (fn) fn.call(videoWrapper);
+            } else {
+                const fn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+                if (fn) fn.call(document);
+            }
+        });
+
+        // ── LOOP TOGGLE ───────────────────────────────────────────────────
+        const loopSwitchWrap = document.getElementById('loopSwitchWrap');
+        const loopToggle     = document.getElementById('loopToggle');
+        const loopStatus     = document.getElementById('loopStatus');
+
+        function applyLoopState(on) {
+            loopToggle.checked = on;
+            videoPlayer.dataset.loopEnabled = on ? '1' : '0';
+            loopStatus.textContent = on ? 'ON' : 'OFF';
+            loopStatus.classList.toggle('off', !on);
+            try { localStorage.setItem('loopEnabled', on ? '1' : '0'); } catch(e) {}
+        }
+
+        // Load saved loop state (default ON)
+        (function() {
+            let saved = '1';
+            try { saved = localStorage.getItem('loopEnabled') ?? '1'; } catch(e) {}
+            applyLoopState(saved === '1');
+        })();
+
+        loopSwitchWrap.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyLoopState(!loopToggle.checked);
+        });
+
+        // ── TRACKING DISTORTION ──────────────────────────────────────────
+        const trackingSlider = document.getElementById('trackingSlider');
+        const trackingReset  = document.getElementById('trackingReset');
+
+        function applyTracking(val) {
+            const v = val / 100;
+            const blur      = (v * v * 4).toFixed(2);        // 0–4px
+            const hueRot    = Math.round(v * 180);            // 0–180deg
+            const saturate  = (1 + v * 3).toFixed(2);        // 1–4
+            const skewY     = (v * 6).toFixed(2);            // 0–6deg
+            const contrast  = (1 + v * 1.5).toFixed(2);      // 1–2.5
+            videoPlayer.style.filter    = `blur(${blur}px) hue-rotate(${hueRot}deg) saturate(${saturate}) contrast(${contrast})`;
+            videoPlayer.style.transform = `skewY(-${skewY}deg)`;
+        }
+
+        trackingSlider.addEventListener('input', () => applyTracking(trackingSlider.value));
+
+        trackingReset.addEventListener('click', () => {
+            trackingSlider.value = 0;
+            videoPlayer.style.filter    = '';
+            videoPlayer.style.transform = '';
+        });
+
+        // ── INIT ──────────────────────────────────────────────────────────
         initializeApp();
+        updateSpotCount();
 
         // Handle video errors
         videoPlayer.addEventListener('error', function() {
-            placeholder.innerHTML = `⚠ VIDEO FILE NOT FOUND ⚠<br><br>`;
             placeholder.style.display = 'block';
             videoPlayer.style.display = 'none';
             staticOverlay.classList.remove('active');
+            timecodeOverlay.classList.remove('visible');
+            reelLeft.classList.remove('spinning');
+            reelRight.classList.remove('spinning');
+            vhsTapeFill.style.width = '0%';
+            // Put error label inside smpte label
+            const lbl = placeholder.querySelector('.smpte-label');
+            if (lbl) lbl.innerHTML = '⚠ VIDEO FILE NOT FOUND ⚠<br><span style="font-size:1rem">[ CHECK FILE PATH ]</span>';
         });
     </script>
 </body>
