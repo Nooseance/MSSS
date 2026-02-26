@@ -20,8 +20,10 @@
             overflow: hidden;
             height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
+            gap: 0;
         }
         
         /* CRT Container */
@@ -29,7 +31,7 @@
             position: relative;
             width: 90vw;
             max-width: 1500px;
-            height: 85vh;
+            height: 80vh;
             background: #0a0a0a;
             border: 10px solid #4a4a4a;
             border-radius: 20px;
@@ -400,35 +402,27 @@
             25%, 75% { opacity: 0.3; }
         }
         
-        /* Static overlay for video transitions */
+        /* Static canvas for video transitions */
         .static-overlay {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: 
-                repeating-linear-gradient(
-                    0deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(255, 255, 255, 0.1) 2px,
-                    rgba(255, 255, 255, 0.1) 4px
-                ),
-                repeating-linear-gradient(
-                    90deg,
-                    transparent,
-                    transparent 2px,
-                    rgba(255, 255, 255, 0.1) 2px,
-                    rgba(255, 255, 255, 0.1) 4px
-                );
             pointer-events: none;
             opacity: 0;
-            transition: opacity 0.3s;
+            transition: opacity 0.15s;
+            z-index: 10;
         }
-        
+
         .static-overlay.active {
             opacity: 1;
+        }
+
+        #staticCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
         }
         
         /* Scrollbar styling */
@@ -450,6 +444,290 @@
             background: #ffff00;
         }
         
+        /* ========================================== */
+        /* NEW FEATURE STYLES */
+        /* ========================================== */
+
+        /* Random Spot Button — REMOVED */
+
+        /* Static toggle bar */
+        .static-toggle-bar {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 10px;
+            padding: 7px 12px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid #333;
+            font-size: 1.1rem;
+            color: #666;
+            letter-spacing: 1px;
+            cursor: pointer;
+            user-select: none;
+            transition: border-color 0.2s;
+        }
+
+        .static-toggle-bar:hover {
+            border-color: #555;
+        }
+
+        .static-toggle-label {
+            color: #00ff00;
+            letter-spacing: 2px;
+            font-size: 1.1rem;
+            text-shadow: 0 0 6px #00ff00;
+            user-select: none;
+        }
+
+        .toggle-icon {
+            font-size: 1rem;
+        }
+
+        /* Hide real checkbox */
+        .toggle-switch-wrap {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+        }
+
+        .toggle-switch-wrap input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-track {
+            display: inline-block;
+            width: 44px;
+            height: 22px;
+            background: #1a1a1a;
+            border: 2px solid #444;
+            border-radius: 0;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 14px;
+            height: 14px;
+            background: #444;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        input[type="checkbox"]:checked + .toggle-track {
+            background: rgba(0,255,0,0.15);
+            border-color: #00ff00;
+            box-shadow: 0 0 8px rgba(0,255,0,0.4);
+        }
+
+        input[type="checkbox"]:checked + .toggle-track .toggle-thumb {
+            transform: translateX(22px);
+            background: #00ff00;
+            box-shadow: 0 0 6px #00ff00;
+        }
+
+        .toggle-status {
+            font-size: 1.1rem;
+            color: #00ff00;
+            text-shadow: 0 0 6px #00ff00;
+            letter-spacing: 2px;
+            min-width: 30px;
+        }
+
+        .toggle-status.off {
+            color: #444;
+            text-shadow: none;
+        }
+
+        /* Ticker footer (outside CRT) */
+        .ticker-footer {
+            width: 90vw;
+            max-width: 1500px;
+            background: #000;
+            border-top: 2px solid #ff00ff;
+            border-bottom: 2px solid #ff00ff;
+            border-left: 10px solid #4a4a4a;
+            border-right: 10px solid #4a4a4a;
+            padding: 7px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            flex-shrink: 0;
+            position: relative;
+        }
+
+        .ticker-content {
+            display: inline-block;
+            font-size: 1.2rem;
+            color: #00ffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px #00ffff;
+            white-space: nowrap;
+            will-change: transform;
+        }
+
+        @keyframes tickerScroll {
+            from { transform: translateX(calc(90vw + 40px)); }
+            to   { transform: translateX(-100%); }
+        }
+
+        /* Channel display OSD */
+        .channel-display {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            color: #fff;
+            text-shadow:
+                0 0 6px #fff,
+                0 0 14px rgba(255,255,255,0.6);
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            filter: blur(0.4px);
+        }
+
+        .channel-display.visible {
+            opacity: 1;
+        }
+
+        /* Konami easter egg overlay */
+        .konami-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .konami-overlay.active {
+            display: flex;
+            animation: konamiFlash 0.3s;
+        }
+
+        @keyframes konamiFlash {
+            0%,100% { background: rgba(0,0,0,0.92); }
+            50% { background: rgba(255,0,255,0.3); }
+        }
+
+        .konami-text {
+            font-size: 3rem;
+            animation: rainbowText 1s linear infinite, glitch 0.5s infinite;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .konami-subtext {
+            font-size: 1.8rem;
+            color: #00ffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 20px #00ffff;
+            margin-bottom: 30px;
+            animation: blink 1s infinite;
+        }
+
+        .konami-close {
+            font-size: 1.3rem;
+            color: #ffff00;
+            border: 2px solid #ffff00;
+            padding: 10px 30px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            background: transparent;
+            font-family: 'VT323', monospace;
+            transition: all 0.2s;
+        }
+
+        .konami-close:hover {
+            background: rgba(255,255,0,0.2);
+            box-shadow: 0 0 20px #ffff00;
+        }
+
+        /* Easter egg video screen */
+        .easter-video-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .easter-video-overlay.active {
+            display: flex;
+        }
+
+        #easterVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .easter-close-btn {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-family: 'VT323', monospace;
+            font-size: 1.6rem;
+            color: #ffff00;
+            border: 2px solid #ffff00;
+            background: rgba(0,0,0,0.7);
+            padding: 6px 18px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            z-index: 3001;
+            transition: all 0.2s;
+            text-shadow: 0 0 8px #ffff00;
+        }
+
+        .easter-close-btn:hover {
+            background: rgba(255,255,0,0.2);
+            box-shadow: 0 0 20px #ffff00;
+        }
+
+        @keyframes rainbowText {
+            0%   { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+            16%  { color: #ff8800; text-shadow: 0 0 20px #ff8800; }
+            33%  { color: #ffff00; text-shadow: 0 0 20px #ffff00; }
+            50%  { color: #00ff00; text-shadow: 0 0 20px #00ff00; }
+            66%  { color: #00ffff; text-shadow: 0 0 20px #00ffff; }
+            83%  { color: #ff00ff; text-shadow: 0 0 20px #ff00ff; }
+            100% { color: #ff0000; text-shadow: 0 0 20px #ff0000; }
+        }
+
+        /* Screen shake */
+        @keyframes screenShake {
+            0%,100% { transform: translate(0,0); }
+            10% { transform: translate(-5px, 4px); }
+            20% { transform: translate(5px, -4px); }
+            30% { transform: translate(-4px, 5px); }
+            40% { transform: translate(4px, -5px); }
+            50% { transform: translate(-6px, 3px); }
+            60% { transform: translate(6px, -3px); }
+            70% { transform: translate(-3px, 6px); }
+            80% { transform: translate(3px, -6px); }
+            90% { transform: translate(-5px, 4px); }
+        }
+
+        .crt-container.shake {
+            animation: screenShake 0.5s ease;
+        }
+
         /* ========================================== */
         /* RESPONSIVE STYLES FOR MOBILE */
         /* ========================================== */
@@ -680,6 +958,12 @@
     </style>
 </head>
 <body>
+    <!-- Easter Egg Video Screen -->
+    <div class="easter-video-overlay" id="easterVideoOverlay">
+        <video id="easterVideo" loop playsinline></video>
+        <button class="easter-close-btn" id="easterCloseBtn">[ ✕ CLOSE ]</button>
+    </div>
+
     <div class="crt-container">
         <div class="crt-screen">
             <div class="vhs-noise"></div>
@@ -692,6 +976,13 @@
                     <div class="subtitle">// SKATE SPOT SHOWCASE //</div>
                 </div>
                 
+                <!-- Konami Easter Egg Overlay -->
+                <div class="konami-overlay" id="konamiOverlay">
+                    <div class="konami-text">🛹 SKATE OR DIE 🛹</div>
+                    <div class="konami-subtext">// CHEAT CODE ACTIVATED //<br>YOU FOUND THE SECRET!</div>
+                    <button class="konami-close" id="konamiClose">[ OK LET'S SKATE ]</button>
+                </div>
+
                 <div class="main-layout">
                     <div class="spot-menu">
                         <h2>[ SELECT SPOT ]</h2>
@@ -702,6 +993,18 @@
                     
                     <div class="video-container">
                         <div class="video-title" id="videoTitle">SELECT A SPOT</div>
+                        <div class="static-toggle-bar" id="staticToggleBar">
+                            <span class="static-toggle-label">
+                                <span class="toggle-icon">📡</span> CHANNEL STATIC
+                            </span>
+                            <div class="toggle-switch-wrap">
+                                <input type="checkbox" id="staticToggle">
+                                <span class="toggle-track">
+                                    <span class="toggle-thumb"></span>
+                                </span>
+                            </div>
+                            <span class="toggle-status" id="toggleStatus">OFF</span>
+                        </div>
                         <div class="video-wrapper">
                             <div class="placeholder" id="placeholder">
                                 ▶ CLICK A SPOT TO PREVIEW ◀<br><br>
@@ -710,12 +1013,18 @@
                             <video id="videoPlayer" controls loop style="display: none;">
                                 Your browser does not support the video tag.
                             </video>
-                            <div class="static-overlay" id="staticOverlay"></div>
+                            <div class="static-overlay" id="staticOverlay">
+                                <canvas id="staticCanvas"></canvas>
+                            </div>
+                            <div class="channel-display" id="channelDisplay">CH 00</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="ticker-footer">
+        <span class="ticker-content" id="tickerContent"></span>
     </div>
 
     <script>
@@ -792,6 +1101,13 @@
                     name: "BANK BY THE POOL",
                     video: "Clips/BankByThePool.mp4",
                 }
+            ],
+
+            // ── TICKER PHRASES ─────────────────────────────────────────────
+            // Add, remove, or edit lines below. Order is randomized automatically.
+            tickerPhrases: [
+                "🛹  SMASH [R] TO SEND IT TO A RANDOM SPOT — NO BAILING ALLOWED",
+                "🕹️  ↑↑↓↓←→←→BA  —  THERE'S A SECRET IN HERE. FIND IT.",
             ]
         };
         
@@ -803,66 +1119,260 @@
         const placeholder = document.getElementById('placeholder');
         const videoTitle = document.getElementById('videoTitle');
         const staticOverlay = document.getElementById('staticOverlay');
+        const staticCanvas = document.getElementById('staticCanvas');
         const spotList = document.getElementById('spotList');
         const mainTitle = document.getElementById('mainTitle');
-        
-        // Initialize the app
+        const konamiOverlay = document.getElementById('konamiOverlay');
+        const konamiClose = document.getElementById('konamiClose');
+        const easterVideoOverlay = document.getElementById('easterVideoOverlay');
+        const easterVideo = document.getElementById('easterVideo');
+        const easterCloseBtn = document.getElementById('easterCloseBtn');
+        const crtContainer = document.querySelector('.crt-container');
+        const tickerEl = document.getElementById('tickerContent');
+        const channelDisplay = document.getElementById('channelDisplay');
+        const staticToggle = document.getElementById('staticToggle');
+        const toggleStatus = document.getElementById('toggleStatus');
+        const staticToggleBar = document.getElementById('staticToggleBar');
+
+        let currentSpotIndex = -1;
+        let staticRafId = null;
+
+        // ── STATIC TOGGLE + LOCALSTORAGE ─────────────────────────────────────
+        function applyToggleState(on) {
+            staticToggle.checked = on;
+            if (on) {
+                toggleStatus.textContent = 'ON';
+                toggleStatus.classList.remove('off');
+            } else {
+                toggleStatus.textContent = 'OFF';
+                toggleStatus.classList.add('off');
+            }
+            try { localStorage.setItem('staticEnabled', on ? '1' : '0'); } catch(e) {}
+        }
+
+        // Load saved state (default OFF)
+        (function() {
+            let saved = '0';
+            try { saved = localStorage.getItem('staticEnabled') ?? '0'; } catch(e) {}
+            applyToggleState(saved === '1');
+        })();
+
+        // Clicking anywhere on the bar toggles
+        staticToggleBar.addEventListener('click', function() {
+            applyToggleState(!staticToggle.checked);
+        });
+
+        // ── STATIC AUDIO ─────────────────────────────────────────────────────
+        const staticAudio = new Audio('static.mp3');
+        staticAudio.volume = 0.6;
+
+        // ── CANVAS STATIC ────────────────────────────────────────────────────
+        const ctx = staticCanvas.getContext('2d');
+
+        function resizeCanvas() {
+            const wrapper = staticCanvas.parentElement.parentElement;
+            staticCanvas.width  = wrapper.clientWidth  || 640;
+            staticCanvas.height = wrapper.clientHeight || 360;
+        }
+
+        function drawStatic(intensity) {
+            resizeCanvas();
+            const w = staticCanvas.width, h = staticCanvas.height;
+            const imgData = ctx.createImageData(w, h);
+            const d = imgData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const v = Math.random() < intensity ? (Math.random() * 255 | 0) : 0;
+                d[i]   = v;
+                d[i+1] = v;
+                d[i+2] = v;
+                d[i+3] = Math.random() < intensity ? 220 : 0;
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            // Occasional bright horizontal "sync" bands
+            if (Math.random() < 0.25) {
+                const y = Math.random() * h | 0;
+                const bh = (Math.random() * 8 + 2) | 0;
+                ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.4})`;
+                ctx.fillRect(0, y, w, bh);
+            }
+        }
+
+        function runStatic(duration, onDone) {
+            cancelAnimationFrame(staticRafId);
+            const start = performance.now();
+            staticOverlay.classList.add('active');
+
+            // Play audio if file is present
+            staticAudio.currentTime = 0;
+            staticAudio.play().catch(() => {}); // silently fail if file missing
+
+            function frame(now) {
+                const t = (now - start) / duration; // 0 → 1
+                if (t >= 1) {
+                    staticOverlay.classList.remove('active');
+                    staticAudio.pause();
+                    staticAudio.currentTime = 0;
+                    onDone && onDone();
+                    return;
+                }
+                const intensity = 0.85 * (1 - t * t);
+                drawStatic(intensity);
+                staticRafId = requestAnimationFrame(frame);
+            }
+            staticRafId = requestAnimationFrame(frame);
+        }
+
+        // ── CHANNEL DISPLAY ──────────────────────────────────────────────────
+        let channelTimeout = null;
+        function showChannel() {
+            const ch = Math.floor(Math.random() * 99) + 1;
+            channelDisplay.textContent = `CH ${String(ch).padStart(2, '0')}`;
+            channelDisplay.classList.add('visible');
+            clearTimeout(channelTimeout);
+            channelTimeout = setTimeout(() => {
+                channelDisplay.classList.remove('visible');
+            }, 2200);
+        }
+
+        // ── TICKER ───────────────────────────────────────────────────────────
+        (function runTicker() {
+            const phrases = [...CONFIG.tickerPhrases];
+            let idx = 0;
+
+            function shuffle(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+            shuffle(phrases);
+
+            function scrollPhrase() {
+                const text = phrases[idx % phrases.length];
+                idx++;
+                if (idx > 0 && idx % phrases.length === 0) shuffle(phrases);
+
+                tickerEl.textContent = text;
+                tickerEl.style.animation = 'none';
+                tickerEl.offsetWidth; // reflow
+                const pxPerSec = 90;
+                const totalPx = window.innerWidth + tickerEl.scrollWidth + 80;
+                const dur = totalPx / pxPerSec;
+                tickerEl.style.animation = `tickerScroll ${dur}s linear`;
+            }
+
+            tickerEl.addEventListener('animationend', scrollPhrase);
+            scrollPhrase();
+        })();
+
+        // ── LOAD SPOT ────────────────────────────────────────────────────────
+        function loadSpot(index) {
+            if (index < 0 || index >= CONFIG.spots.length) return;
+            currentSpotIndex = index;
+
+            const spot = CONFIG.spots[index];
+            const items = document.querySelectorAll('.spot-item');
+            items.forEach((i, idx) => {
+                i.classList.toggle('active', idx === index);
+            });
+            items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            showChannel();
+
+            if (staticToggle.checked) {
+                runStatic(550, () => {
+                    videoPlayer.src = spot.video;
+                    videoPlayer.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    videoTitle.textContent = spot.name;
+                    videoPlayer.play().catch(() => {});
+                });
+            } else {
+                videoPlayer.src = spot.video;
+                videoPlayer.style.display = 'block';
+                placeholder.style.display = 'none';
+                videoTitle.textContent = spot.name;
+                videoPlayer.play().catch(() => {});
+            }
+        }
+
+        // ── KONAMI CODE ─────────────────────────────────────────────────────
+        const konamiSequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let konamiIndex = 0;
+
+        konamiClose.addEventListener('click', () => {
+            konamiOverlay.classList.remove('active');
+            // Launch the easter egg video
+            easterVideo.src = 'Clips/_EASTER.mp4';
+            easterVideoOverlay.classList.add('active');
+            easterVideo.play().catch(() => {});
+        });
+
+        easterCloseBtn.addEventListener('click', () => {
+            easterVideoOverlay.classList.remove('active');
+            easterVideo.pause();
+            easterVideo.src = '';
+        });
+
+        // ── INITIALIZE ───────────────────────────────────────────────────────
         function initializeApp() {
-            // Update title and subtitle
             const titleText = document.querySelector('.header h1').childNodes[0];
             titleText.textContent = `"${CONFIG.title}"`;
             document.querySelector('.subtitle').textContent = CONFIG.subtitle;
-            
-            // Click title to open Twitch
+
             if (CONFIG.twitchUrl) {
                 mainTitle.addEventListener('click', function(e) {
                     e.stopPropagation();
                     window.open(CONFIG.twitchUrl, '_blank');
                 });
             }
-            
-            // Generate spot menu items
-            CONFIG.spots.forEach(spot => {
+
+            CONFIG.spots.forEach((spot, index) => {
                 const spotItem = document.createElement('div');
                 spotItem.className = 'spot-item';
                 spotItem.setAttribute('data-video', spot.video);
-                spotItem.setAttribute('data-description', spot.description);
+                spotItem.setAttribute('data-description', spot.description || '');
                 spotItem.textContent = spot.name;
                 spotList.appendChild(spotItem);
-                
-                // Add click event listener
                 spotItem.addEventListener('click', function() {
-                    // Remove active class from all items
-                    document.querySelectorAll('.spot-item').forEach(i => i.classList.remove('active'));
-                    
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Get video source and spot name
-                    const videoSrc = this.getAttribute('data-video');
-                    const spotName = this.textContent;
-                    
-                    // Show static effect
-                    staticOverlay.classList.add('active');
-                    
-                    // Update video after brief static
-                    setTimeout(() => {
-                        videoPlayer.src = videoSrc;
-                        videoPlayer.style.display = 'block';
-                        placeholder.style.display = 'none';
-                        videoTitle.textContent = spotName;
-                        videoPlayer.play();
-                        
-                        // Hide static
-                        staticOverlay.classList.remove('active');
-                    }, 300);
+                    loadSpot(index);
                 });
             });
         }
-        
+
+        function pickRandom() {
+            const r = Math.floor(Math.random() * CONFIG.spots.length);
+            loadSpot(r);
+            crtContainer.classList.remove('shake');
+            void crtContainer.offsetWidth;
+            crtContainer.classList.add('shake');
+            setTimeout(() => crtContainer.classList.remove('shake'), 600);
+        }
+
+        // ── KEYBOARD CONTROLS ────────────────────────────────────────────────
+        document.addEventListener('keydown', function(e) {
+            if (e.key === konamiSequence[konamiIndex]) {
+                konamiIndex++;
+                if (konamiIndex === konamiSequence.length) {
+                    konamiIndex = 0;
+                    crtContainer.classList.remove('shake');
+                    void crtContainer.offsetWidth;
+                    crtContainer.classList.add('shake');
+                    setTimeout(() => {
+                        konamiOverlay.classList.add('active');
+                        crtContainer.classList.remove('shake');
+                    }, 500);
+                }
+            } else {
+                konamiIndex = 0;
+            }
+            if (e.key === 'r' || e.key === 'R') pickRandom();
+        });
+
         // Initialize on page load
         initializeApp();
-        
+
         // Handle video errors
         videoPlayer.addEventListener('error', function() {
             placeholder.innerHTML = `⚠ VIDEO FILE NOT FOUND ⚠<br><br>`;
