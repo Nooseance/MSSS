@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKATE SPOTS // VHS SELECTOR</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'VT323', monospace;
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* CRT Container */
+        .crt-container {
+            position: relative;
+            width: 90vw;
+            max-width: 1500px;
+            height: 85vh;
+            background: #0a0a0a;
+            border: 10px solid #4a4a4a;
+            border-radius: 20px;
+            box-shadow: 
+                inset 0 0 50px rgba(0, 255, 0, 0.1),
+                0 0 100px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+        }
+        
+        /* CRT Screen Effect */
+        .crt-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+            overflow: hidden;
+        }
+        
+        /* Scanlines */
+        .crt-screen::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
+                transparent 1px,
+                transparent 2px
+            );
+            pointer-events: none;
+            z-index: 1000;
+            animation: scanline 8s linear infinite;
+        }
+        
+        /* Screen curve effect */
+        .crt-screen::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, transparent 50%, rgba(0, 0, 0, 0.4) 100%);
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        /* VHS noise overlay */
+        .vhs-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 2px,
+                    rgba(255, 255, 255, 0.03) 4px
+                );
+            opacity: 0.3;
+            pointer-events: none;
+            z-index: 998;
+            animation: vhsNoise 0.3s infinite;
+        }
+        
+        @keyframes scanline {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100%); }
+        }
+        
+        @keyframes vhsNoise {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.4; }
+        }
+        
+        /* Main content area */
+        .content {
+            position: relative;
+            z-index: 10;
+            padding: 12px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Back button */
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            background: transparent;
+            padding: 3px 10px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            z-index: 100;
+            transition: all 0.2s;
+            text-shadow: 0 0 6px #00ffff;
+            box-shadow: 0 0 6px rgba(0,255,255,0.2);
+            text-decoration: none;
+            display: inline-block;
+            line-height: 1.4;
+        }
+        .back-btn:hover {
+            background: rgba(0,255,255,0.12);
+            box-shadow: 0 0 14px rgba(0,255,255,0.5);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            animation: glitch 3s infinite;
+        }
+        
+        .header h1 {
+            font-size: 4rem;
+            color: #ff00ff;
+            text-shadow: 
+                3px 3px 0 #00ffff,
+                -2px -2px 0 #ffff00,
+                0 0 20px #ff00ff;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+            padding-bottom: 5px;
+        }
+        
+        .header h1::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
+            transition: width 0.3s;
+        }
+        
+        .header h1:hover::after {
+            width: 100%;
+        }
+        
+        .header h1:hover {
+            text-shadow: 
+                3px 3px 0 #00ffff,
+                -2px -2px 0 #ffff00,
+                0 0 30px #ff00ff,
+                0 0 40px #ff00ff;
+        }
+        
+        /* Tooltip-style popup */
+        .title-popup {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(255, 0, 255, 0.95);
+            border: 3px solid #ffff00;
+            padding: 12px 25px;
+            font-size: 1.3rem;
+            color: #000;
+            text-shadow: none;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1001;
+            box-shadow: 0 0 25px rgba(255, 255, 0, 0.7);
+        }
+        
+        .title-popup::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #ffff00;
+        }
+        
+        /* VHS Glitch Animation on hover */
+        .header h1:hover .title-popup {
+            animation: vhsGlitchIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        @keyframes vhsGlitchIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0) rotateZ(-5deg);
+                filter: hue-rotate(0deg) saturate(2);
+            }
+            15% {
+                opacity: 0.3;
+                transform: translateX(-48%) scale(0.3) rotateZ(2deg);
+                filter: hue-rotate(90deg) saturate(3);
+            }
+            25% {
+                opacity: 0.7;
+                transform: translateX(-52%) scale(0.5) rotateZ(-3deg);
+                box-shadow: 
+                    -5px 0 0 #ff00ff,
+                    5px 0 0 #00ffff,
+                    0 0 40px rgba(255, 255, 0, 1);
+            }
+            35% {
+                transform: translateX(-50%) scale(0.8) rotateZ(1deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.15) rotateZ(-1deg);
+                filter: hue-rotate(180deg) saturate(2);
+                box-shadow: 
+                    -8px 0 0 #ff00ff,
+                    8px 0 0 #00ffff,
+                    0 0 60px rgba(255, 255, 0, 1);
+            }
+            65% {
+                transform: translateX(-50%) scale(0.95) rotateZ(0.5deg);
+                box-shadow: 0 0 50px rgba(255, 255, 0, 0.9);
+            }
+            80% {
+                transform: translateX(-50%) scale(1.05) rotateZ(0deg);
+                filter: hue-rotate(0deg) saturate(1.5);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotateZ(0deg);
+                filter: hue-rotate(0deg) saturate(1);
+                box-shadow: 0 0 35px rgba(255, 255, 0, 0.8);
+            }
+        }
+        
+        /* Scanline effect on tooltip */
+        .header h1:hover .title-popup::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 0, 0, 0.1) 2px,
+                rgba(0, 0, 0, 0.1) 4px
+            );
+            pointer-events: none;
+            animation: scanlineMove 0.8s linear infinite;
+        }
+        
+        @keyframes scanlineMove {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(4px); }
+        }
+        
+        .header .subtitle {
+            font-size: 1.5rem;
+            color: #00ff00;
+            text-shadow: 2px 2px 0 #000;
+            letter-spacing: 4px;
+        }
+        
+        @keyframes glitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 2px); }
+            94% { transform: translate(2px, -2px); }
+            96% { transform: translate(-2px, -2px); }
+        }
+        
+        /* Main layout */
+        .main-layout {
+            display: flex;
+            gap: 30px;
+            flex: 1;
+            min-height: 0;
+        }
+        
+        /* Spot menu */
+        .spot-menu {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.6);
+            border: 3px solid #00ff00;
+            padding: 20px;
+            overflow-y: auto;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 0, 0.2),
+                0 0 30px rgba(0, 255, 0, 0.3);
+        }
+        
+        .spot-menu h2 {
+            font-size: 2rem;
+            color: #ffff00;
+            text-shadow: 2px 2px 0 #000;
+            margin-bottom: 20px;
+            text-align: center;
+            letter-spacing: 4px;
+        }
+        
+        .spot-item {
+            background: rgba(255, 0, 255, 0.1);
+            border: 2px solid #ff00ff;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            font-size: 1.8rem;
+            color: #00ffff;
+            text-shadow: 1px 1px 0 #000;
+            transition: all 0.3s;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .spot-item::before {
+            content: '▶';
+            position: absolute;
+            left: -30px;
+            color: #ffff00;
+            transition: left 0.3s;
+        }
+        
+        .spot-item:hover {
+            background: rgba(255, 0, 255, 0.3);
+            border-color: #ffff00;
+            color: #ffff00;
+            transform: translateX(10px);
+            box-shadow: 0 0 20px rgba(255, 255, 0, 0.5);
+        }
+        
+        .spot-item:hover::before {
+            left: 10px;
+        }
+        
+        .spot-item.active {
+            background: rgba(255, 255, 0, 0.3);
+            border-color: #ffff00;
+            color: #000;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(255, 255, 0, 0.8);
+        }
+        
+        /* Video player */
+        .video-container {
+            flex: 1.5;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #00ffff;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 
+                inset 0 0 20px rgba(0, 255, 255, 0.2),
+                0 0 30px rgba(0, 255, 255, 0.3);
+        }
+        
+        .video-title {
+            font-size: 2.5rem;
+            color: #ff00ff;
+            text-shadow: 2px 2px 0 #000;
+            text-align: center;
+            margin-bottom: 20px;
+            letter-spacing: 3px;
+        }
+        
+        .video-wrapper {
+            flex: 1;
+            background: #000;
+            border: 2px solid #ffff00;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .placeholder {
+            color: #00ff00;
+            font-size: 2rem;
+            text-align: center;
+            padding: 40px;
+            text-shadow: 2px 2px 0 #000;
+            animation: blink 1.5s infinite;
+        }
+        
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+        
+        /* Static overlay for video transitions */
+        .static-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.1) 2px,
+                    rgba(255, 255, 255, 0.1) 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.1) 2px,
+                    rgba(255, 255, 255, 0.1) 4px
+                );
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .static-overlay.active {
+            opacity: 1;
+        }
+        
+        /* Scrollbar styling */
+        .spot-menu::-webkit-scrollbar {
+            width: 12px;
+        }
+        
+        .spot-menu::-webkit-scrollbar-track {
+            background: #000;
+            border: 1px solid #00ff00;
+        }
+        
+        .spot-menu::-webkit-scrollbar-thumb {
+            background: #00ff00;
+            border: 2px solid #000;
+        }
+        
+        .spot-menu::-webkit-scrollbar-thumb:hover {
+            background: #ffff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="crt-container">
+        <div class="crt-screen">
+            <div class="vhs-noise"></div>
+            <div class="content">
+                <a class="back-btn" href="index.html">◄ BACK</a>
+                <div class="header">
+                    <h1 id="mainTitle">
+                        "TOUR DE MAUI"
+                        <div class="title-popup" id="joinButton">▲ CLICK TO JOIN THE TOUR ▲</div>
+                    </h1>
+                    <div class="subtitle">// SKATE SPOT SHOWCASE //</div>
+                </div>
+                
+                <div class="main-layout">
+                    <div class="spot-menu">
+                        <h2>[ SELECT SPOT ]</h2>
+                        <div id="spotList">
+                            <!-- Spots will be loaded from config below -->
+                        </div>
+                    </div>
+                    
+                    <div class="video-container">
+                        <div class="video-title" id="videoTitle">SELECT A SPOT</div>
+                        <div class="video-wrapper">
+                            <div class="placeholder" id="placeholder">
+                                ▶ CLICK A SPOT TO PREVIEW ◀<br><br>
+                                [ WAITING FOR SELECTION... ]
+                            </div>
+                            <video id="videoPlayer" controls loop style="display: none;">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="static-overlay" id="staticOverlay"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // CONFIG — loaded from config.json
+        // Edit config.json to update spots and links.
+        // ═══════════════════════════════════════════════════════════════════
+
+        let CONFIG = {};
+
+        // ═══════════════════════════════════════════════════════════════════
+        // END OF CONFIG
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const videoPlayer = document.getElementById('videoPlayer');
+        const placeholder = document.getElementById('placeholder');
+        const videoTitle = document.getElementById('videoTitle');
+        const staticOverlay = document.getElementById('staticOverlay');
+        const spotList = document.getElementById('spotList');
+        const mainTitle = document.getElementById('mainTitle');
+        
+        // Initialize the app
+        function initializeApp() {
+            // Update title and subtitle
+            const titleText = document.querySelector('.header h1').childNodes[0];
+            titleText.textContent = `"${CONFIG.title}"`;
+            document.querySelector('.subtitle').textContent = CONFIG.subtitle;
+            
+            // Click title to open Twitch
+            if (CONFIG.twitchUrl) {
+                mainTitle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    window.open(CONFIG.twitchUrl, '_blank');
+                });
+            }
+            
+            // Generate spot menu items
+            CONFIG.spots.forEach(spot => {
+                const spotItem = document.createElement('div');
+                spotItem.className = 'spot-item';
+                spotItem.setAttribute('data-video', spot.video);
+                spotItem.setAttribute('data-description', spot.description);
+                spotItem.textContent = spot.name;
+                spotList.appendChild(spotItem);
+                
+                // Add click event listener
+                spotItem.addEventListener('click', function() {
+                    // Remove active class from all items
+                    document.querySelectorAll('.spot-item').forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Get video source and spot name
+                    const videoSrc = this.getAttribute('data-video');
+                    const spotName = this.textContent;
+                    
+                    // Show static effect
+                    staticOverlay.classList.add('active');
+                    
+                    // Update video after brief static
+                    setTimeout(() => {
+                        videoPlayer.src = videoSrc;
+                        videoPlayer.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        videoTitle.textContent = spotName;
+                        videoPlayer.play();
+                        
+                        // Hide static
+                        staticOverlay.classList.remove('active');
+                    }, 300);
+                });
+            });
+        }
+        
+        // ── BOOT: fetch config then start ────────────────────────────────
+        fetch('config.json')
+            .then(r => r.json())
+            .then(data => {
+                CONFIG = data;
+                initializeApp();
+            })
+            .catch(() => {
+                spotList.innerHTML = '<div style="color:#ff0000;padding:12px;font-size:1.2rem;letter-spacing:2px;">⚠ config.json NOT FOUND</div>';
+            });
+
+        // Handle video errors
+        videoPlayer.addEventListener('error', function() {
+            placeholder.innerHTML = `⚠ VIDEO FILE NOT FOUND ⚠<br><br>`;
+            placeholder.style.display = 'block';
+            videoPlayer.style.display = 'none';
+            staticOverlay.classList.remove('active');
+        });
+    </script>
+</body>
+</html>

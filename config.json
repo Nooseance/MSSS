@@ -1,0 +1,37 @@
+{
+    "twitchUrl": "https://www.twitch.tv/MauiKrouse",
+    "title": "TOUR DE MAUI",
+    "subtitle": "// SKATE SPOT SHOWCASE //",
+
+    "spots": [
+        { "name": "THE OG (GRIND)",                       "video": "Clips/TheOG-Grind.mp4" },
+        { "name": "THE OG (RAMP)",                        "video": "Clips/TheOG-Ramp.mp4" },
+        { "name": "THE LOOP",                             "video": "Clips/TheLoop.mp4" },
+        { "name": "THE SPIDERMAN",                        "video": "Clips/TheSpiderman.mp4" },
+        { "name": "ROLLING WAVES",                        "video": "Clips/RollingWaves.mp4" },
+        { "name": "ROLLING WAVES LITE (STILLWATER)",      "video": "Clips/RollingWavesLite.mp4" },
+        { "name": "THE BRIDGE",                           "video": "Clips/TheBridge.mp4" },
+        { "name": "THE (BACKWARDS) BRIDGE",               "video": "Clips/TheBridgeBackwards.mp4" },
+        { "name": "DOUBLE STAIR GRIND",                   "video": "Clips/MarketMileStairs.mp4" },
+        { "name": "DOWN THE HOLE",                        "video": "Clips/DownTheHole.mp4" },
+        { "name": "ONTO THE GARAGE",                      "video": "Clips/OntoTheGarage.mp4" },
+        { "name": "FREEWAY STEP-UP",                      "video": "Clips/FreewayStep-Up.mp4" },
+        { "name": "BANK BY THE POOL",                     "video": "Clips/BankByThePool.mp4" }
+    ],
+
+    "tickerPhrases": [
+        { "text": "🛹  SMASH [R] TO SEND IT TO A RANDOM SPOT — NO BAILING ALLOWED", "color": "#00ff00", "glow": "#00ff00" },
+        { "text": "🕹️ Enter ↑↑↓↓←→←→BA  —  THERE'S A SECRET IN HERE.",             "color": "#00ffff", "glow": "#00ffff" },
+        { "text": "🚫❌NO TIMMYS ALLOWED❌🚫",                                        "color": "#c00000", "glow": "#c00000" },
+        { "text": "😤‍BLINKER BREAK️💨",                                               "color": "#ffff00", "glow": "#ffff00" },
+        { "text": "🎫CLICK THE -TOUR DE MAUI- TITLE ABOVE TO JOIN THE TOUR🎫",       "color": "#ff00ff", "glow": "#ff00ff" }
+    ],
+
+    "easterLinks": [
+        { "icon": "📺", "label": "TWITCH",   "url": "https://www.twitch.tv/MauiKrouse" },
+        { "icon": "▶️",  "label": "YOUTUBE",  "url": "https://www.youtube.com/@MauiKrouseTV/videos" },
+        { "icon": "💬", "label": "DISCORD",  "url": "https://discord.gg/9aeJB9XZ9D" },
+        { "icon": "👕", "label": "MERCH",    "url": "https://mauikrouse.com/" },
+        { "icon": "🌲", "label": "LINKTREE", "url": "https://linktr.ee/mauikrouse" }
+    ]
+}
