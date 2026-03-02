@@ -527,7 +527,6 @@
         }
 
         .static-toggle-label { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
-        .loop-toggle-label   { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
         .tracking-label      { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
 
         .toggle-icon { font-size: 0.85rem; }
@@ -582,20 +581,7 @@
             box-shadow: 0 0 4px #00ff00;
         }
 
-        input[type="checkbox"]#loopToggle:checked + .toggle-track {
-            background: rgba(255,0,255,0.15);
-            border-color: #ff00ff;
-            box-shadow: 0 0 6px rgba(255,0,255,0.4);
-        }
-
-        input[type="checkbox"]#loopToggle:checked + .toggle-track .toggle-thumb {
-            transform: translateX(16px);
-            background: #ff00ff;
-            box-shadow: 0 0 4px #ff00ff;
-        }
-
-        .toggle-status,
-        #loopStatus {
+        .toggle-status {
             font-size: 0.85rem;
             letter-spacing: 1px;
             min-width: 22px;
@@ -604,68 +590,10 @@
 
         .toggle-status     { color: #00ff00; text-shadow: 0 0 4px #00ff00; }
         .toggle-status.off { color: #444;    text-shadow: none; }
-        #loopStatus        { color: #ff00ff; text-shadow: 0 0 4px #ff00ff; }
-        #loopStatus.off    { color: #444;    text-shadow: none; }
-
-        /* Tracking slider — fills available space, never overflows */
-        #trackingSlider {
-            flex: 1;
-            min-width: 0;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 8px;
-            background: #111;
-            border: 1px solid #333;
-            outline: none;
-            cursor: pointer;
-        }
-
-        #trackingSlider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 13px;
-            height: 13px;
-            background: #ff00ff;
-            border: 2px solid #ffff00;
-            cursor: pointer;
-            box-shadow: 0 0 5px #ff00ff;
-        }
-
-        #trackingSlider::-moz-range-thumb {
-            width: 13px;
-            height: 13px;
-            background: #ff00ff;
-            border: 2px solid #ffff00;
-            cursor: pointer;
-            box-shadow: 0 0 5px #ff00ff;
-        }
-
-        #trackingReset {
-            font-family: 'VT323', monospace;
-            font-size: 0.9rem;
-            color: #ffff00;
-            border: 1px solid #ffff00;
-            background: transparent;
-            padding: 1px 6px;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: all 0.2s;
-            white-space: nowrap;
-            flex-shrink: 0;
-            line-height: 1.4;
-        }
-
-        #trackingReset:hover {
-            background: rgba(255,255,0,0.15);
-            box-shadow: 0 0 6px #ffff00;
-        }
 
         /* Responsive: tracking section wraps to its own row below 640px */
         @media screen and (max-width: 640px) {
             .ctrl-section { padding: 4px 8px; gap: 5px; }
-            .ctrl-section.tracking-section {
-                flex-basis: 100%;
-                border-top: 1px solid #222;
-            }
             .ctrl-divider { display: none; }
         }
 
@@ -1205,18 +1133,6 @@
             display: block;
         }
 
-        .timecode-icon {
-            display: inline-block;
-            animation: spinReel 2s linear infinite;
-        }
-
-        @keyframes spinReel {
-            from { transform: rotate(0deg); }
-            to   { transform: rotate(360deg); }
-        }
-
-        /* ── TRACKING SLIDER — styles now inside .static-toggle-bar above ── */
-
         /* ── VHS CUSTOM CONTROLS ──────────────────────────────────────── */
         .vhs-controls {
             display: flex;
@@ -1465,7 +1381,6 @@
             .vhs-row { gap: 4px; padding: 4px 6px; }
             .reel { width: 18px; height: 18px; }
             .reel::before { width: 6px; height: 6px; }
-            .tracking-label { font-size: 0.9rem; }
             .crt-vol-bar { width: 7px; }
         }
 
@@ -1555,23 +1470,6 @@
                                 </div>
                                 <span class="toggle-status" id="toggleStatus">OFF</span>
                             </div>
-                            <div class="ctrl-divider"></div>
-                            <!-- Loop section -->
-                            <div class="ctrl-section">
-                                <span class="loop-toggle-label">🔁 LOOP</span>
-                                <div class="toggle-switch-wrap" id="loopSwitchWrap">
-                                    <input type="checkbox" id="loopToggle" checked>
-                                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
-                                </div>
-                                <span id="loopStatus">ON</span>
-                            </div>
-                            <div class="ctrl-divider"></div>
-                            <!-- Tracking section -->
-                            <div class="ctrl-section tracking-section">
-                                <span class="tracking-label">🎛 TRACKING</span>
-                                <input type="range" id="trackingSlider" min="0" max="100" value="0">
-                                <button id="trackingReset">[ RESET ]</button>
-                            </div>
                         </div>
                         <div class="video-wrapper">
                             <div class="placeholder" id="placeholder">
@@ -1603,7 +1501,7 @@
                             </div>
                             <div class="channel-display" id="channelDisplay">CH 00</div>
                             <div class="timecode-overlay" id="timecodeOverlay">
-                                <span class="timecode-icon">📼</span> <span id="timecodeCurrentTime">00:00</span> / <span id="timecodeDuration">00:00</span>
+                                <span id="timecodeCurrentTime">00:00</span> / <span id="timecodeDuration">00:00</span>
                             </div>
                             <!-- CRT Volume HUD -->
                             <div class="crt-volume-hud" id="crtVolumeHud">
@@ -2056,14 +1954,8 @@
         });
 
         videoPlayer.addEventListener('ended', () => {
-            if (videoPlayer.dataset.loopEnabled === '1') {
-                videoPlayer.currentTime = 0;
-                videoPlayer.play().catch(() => {});
-            } else {
-                playPauseBtn.textContent = '► PLAY';
-                reelLeft.classList.remove('spinning');
-                reelRight.classList.remove('spinning');
-            }
+            videoPlayer.currentTime = 0;
+            videoPlayer.play().catch(() => {});
         });
 
         playPauseBtn.addEventListener('click', () => {
@@ -2171,54 +2063,6 @@
                 const fn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
                 if (fn) fn.call(document);
             }
-        });
-
-        // ── LOOP TOGGLE ───────────────────────────────────────────────────
-        const loopSwitchWrap = document.getElementById('loopSwitchWrap');
-        const loopToggle     = document.getElementById('loopToggle');
-        const loopStatus     = document.getElementById('loopStatus');
-
-        function applyLoopState(on) {
-            loopToggle.checked = on;
-            videoPlayer.dataset.loopEnabled = on ? '1' : '0';
-            loopStatus.textContent = on ? 'ON' : 'OFF';
-            loopStatus.classList.toggle('off', !on);
-            try { localStorage.setItem('loopEnabled', on ? '1' : '0'); } catch(e) {}
-        }
-
-        // Load saved loop state (default ON)
-        (function() {
-            let saved = '1';
-            try { saved = localStorage.getItem('loopEnabled') ?? '1'; } catch(e) {}
-            applyLoopState(saved === '1');
-        })();
-
-        loopSwitchWrap.addEventListener('click', (e) => {
-            e.stopPropagation();
-            applyLoopState(!loopToggle.checked);
-        });
-
-        // ── TRACKING DISTORTION ──────────────────────────────────────────
-        const trackingSlider = document.getElementById('trackingSlider');
-        const trackingReset  = document.getElementById('trackingReset');
-
-        function applyTracking(val) {
-            const v = val / 100;
-            const blur      = (v * v * 4).toFixed(2);        // 0–4px
-            const hueRot    = Math.round(v * 180);            // 0–180deg
-            const saturate  = (1 + v * 3).toFixed(2);        // 1–4
-            const skewY     = (v * 6).toFixed(2);            // 0–6deg
-            const contrast  = (1 + v * 1.5).toFixed(2);      // 1–2.5
-            videoPlayer.style.filter    = `blur(${blur}px) hue-rotate(${hueRot}deg) saturate(${saturate}) contrast(${contrast})`;
-            videoPlayer.style.transform = `skewY(-${skewY}deg)`;
-        }
-
-        trackingSlider.addEventListener('input', () => applyTracking(trackingSlider.value));
-
-        trackingReset.addEventListener('click', () => {
-            trackingSlider.value = 0;
-            videoPlayer.style.filter    = '';
-            videoPlayer.style.transform = '';
         });
 
         // ── BOOT: fetch config.json, then start everything ────────────────
