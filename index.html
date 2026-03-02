@@ -8,412 +8,2237 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=VT323&display=swap">
     <style>
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --green:   #00ff00;
-            --magenta: #ff00ff;
-            --cyan:    #00ffff;
-            --yellow:  #ffff00;
-            --bg:      #000;
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
+        
         body {
             font-family: 'VT323', monospace;
-            background: var(--bg);
-            color: var(--green);
+            background: #000;
+            color: #0f0;
+            overflow: hidden;
             height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: center;
             justify-content: center;
-            overflow: hidden;
-            cursor: default;
+            align-items: center;
+            gap: 0;
         }
+        
+/* CRT Container */
+.crt-container {
+    position: relative;
+    width: 100%;
+    max-width: 95%;
+    height: 95%;
+    background: #0a0a0a;
+    border: 5px solid transparent;
+    border-radius: 20px 20px 0px 0px;
+    box-shadow: 
+        inset 0 0 50px rgba(0, 255, 0, 0.2),
+        0 0 30px rgba(0, 255, 0, 0.3);
+    overflow: hidden;
+    
+    /* CRT-style green gradient border */
+    background: 
+        linear-gradient(#0a0a0a, #0a0a0a) padding-box,
+        linear-gradient(180deg, 
+            #00ff00 0%, 
+            #ff00ff 25%, 
+            #00ffff 50%, 
+			#00ffff 75%,
+            #ffff00 100%
+        ) border-box;
+    border-color: transparent;
+    
+    /* scanline effect */
+    &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: repeating-linear-gradient(
+            0deg,
+            rgba(0, 255, 0, 0.03) 0px,
+            rgba(0, 0, 0, 0.1) 2px,
+            transparent 3px
+        );
+        pointer-events: none;
+        z-index: 1;
+    }
+}
 
-        /* ── SCANLINE OVERLAY ───────────────────────────────── */
-        body::before {
+/* crt-flicker removed for performance */
+        
+        /* CRT Screen Effect */
+        .crt-screen {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, #1a1a1a 0%, #000 100%);
+            overflow: hidden;
+        }
+        
+        /* Scanlines */
+        .crt-screen::before {
             content: '';
-            position: fixed;
-            inset: 0;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: repeating-linear-gradient(
                 0deg,
-                rgba(0,0,0,0.18) 0px,
-                rgba(0,0,0,0.18) 1px,
+                rgba(0, 0, 0, 0.15),
+                rgba(0, 0, 0, 0.15) 1px,
                 transparent 1px,
                 transparent 2px
             );
             pointer-events: none;
-            z-index: 9999;
+            z-index: 1000;
         }
-
-        /* ── VIGNETTE ───────────────────────────────────────── */
-        body::after {
-            content: '';
-            position: fixed;
-            inset: 0;
-            background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
+        
+        /* screen vignette removed for performance */
+        
+        /* VHS noise overlay */
+        .vhs-noise {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(255, 255, 255, 0.03) 2px,
+                    rgba(255, 255, 255, 0.03) 4px
+                );
+            opacity: 0.3;
             pointer-events: none;
-            z-index: 9998;
+            z-index: 998;
         }
+        
 
-        /* ── MAIN CARD ──────────────────────────────────────── */
-        .card {
+
+        /* Main content area */
+        .content {
             position: relative;
-            width: min(520px, 92vw);
-            background: #0a0a0a;
-            border: 4px solid transparent;
-            border-radius: 4px;
-            padding: 48px 44px 44px;
+            z-index: 10;
+            padding: 12px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        /* Back button */
+        .back-btn {
+            position: absolute;
+            top: 10px;
+            left: 12px;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            background: transparent;
+            padding: 3px 10px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            z-index: 100;
+            transition: all 0.2s;
+            text-shadow: 0 0 6px #00ffff;
+            box-shadow: 0 0 6px rgba(0,255,255,0.2);
+            text-decoration: none;
+            display: inline-block;
+            line-height: 1.4;
+        }
+        .back-btn:hover {
+            background: rgba(0,255,255,0.12);
+            box-shadow: 0 0 14px rgba(0,255,255,0.5);
+        }
+
+        /* Header */
+        .header {
             text-align: center;
-
-            background:
-                linear-gradient(#0a0a0a, #0a0a0a) padding-box,
-                linear-gradient(135deg,
-                    var(--green)   0%,
-                    var(--cyan)    30%,
-                    var(--magenta) 60%,
-                    var(--yellow)  100%
-                ) border-box;
-
-            box-shadow:
-                0 0 40px rgba(0,255,0,0.15),
-                inset 0 0 60px rgba(0,255,0,0.04);
-
-            animation: cardIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
+            margin-bottom: 30px;
+            animation: glitch 3s infinite;
         }
-
-        @keyframes cardIn {
-            from { opacity: 0; transform: scale(0.92) translateY(12px); }
-            to   { opacity: 1; transform: scale(1) translateY(0); }
+        
+        .header h1 {
+            font-size: 4rem;
+            color: #ff00ff;
+            text-shadow: 
+                3px 3px 0 #00ffff,
+                -2px -2px 0 #ffff00,
+                0 0 20px #ff00ff;
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+            position: relative;
+            display: inline-block;
+            transition: all 0.3s;
+            cursor: pointer;
+            padding-bottom: 5px;
         }
-
-        /* corner brackets */
-        .card::before, .card::after {
+        
+        .header h1::after {
             content: '';
             position: absolute;
-            width: 14px;
-            height: 14px;
-            border-color: var(--yellow);
-            border-style: solid;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #ff00ff, #00ffff, #ffff00);
+            transition: width 0.3s;
         }
-        .card::before { top: 6px; left: 6px;  border-width: 2px 0 0 2px; }
-        .card::after  { bottom: 6px; right: 6px; border-width: 0 2px 2px 0; }
-
-        /* ── TITLE ──────────────────────────────────────────── */
-        .title {
-            font-size: 3.8rem;
-            color: var(--magenta);
-            letter-spacing: 6px;
-            text-shadow:
-                3px 3px 0 var(--cyan),
-                -2px -2px 0 var(--yellow),
-                0 0 24px var(--magenta);
-            line-height: 1;
-            margin-bottom: 6px;
-            animation: glitch 4s infinite;
+        
+        .header h1:hover::after {
+            width: 100%;
         }
-
+        
+        .header h1:hover {
+            text-shadow: 
+                3px 3px 0 #00ffff,
+                -2px -2px 0 #ffff00,
+                0 0 30px #ff00ff,
+                0 0 40px #ff00ff;
+        }
+        
+        /* Tooltip-style popup */
+        .title-popup {
+            position: absolute;
+            bottom: -60px;
+            left: 50%;
+            transform: translateX(-50%) scale(0);
+            background: rgba(255, 0, 255, 0.95);
+            border: 3px solid #ffff00;
+            padding: 12px 25px;
+            font-size: 1.3rem;
+            color: #000;
+            text-shadow: none;
+            letter-spacing: 2px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1001;
+            box-shadow: 0 0 25px rgba(255, 255, 0, 0.7);
+        }
+        
+        .title-popup::before {
+            content: '';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 10px solid #ffff00;
+        }
+        
+        /* VHS Glitch Animation on hover */
+        .header h1:hover .title-popup {
+            animation: vhsGlitchIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+        }
+        
+        @keyframes vhsGlitchIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-50%) scale(0) rotateZ(-5deg);
+                filter: hue-rotate(0deg) saturate(2);
+            }
+            15% {
+                opacity: 0.3;
+                transform: translateX(-48%) scale(0.3) rotateZ(2deg);
+                filter: hue-rotate(90deg) saturate(3);
+            }
+            25% {
+                opacity: 0.7;
+                transform: translateX(-52%) scale(0.5) rotateZ(-3deg);
+                box-shadow: 
+                    -5px 0 0 #ff00ff,
+                    5px 0 0 #00ffff,
+                    0 0 40px rgba(255, 255, 0, 1);
+            }
+            35% {
+                transform: translateX(-50%) scale(0.8) rotateZ(1deg);
+            }
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.15) rotateZ(-1deg);
+                filter: hue-rotate(180deg) saturate(2);
+                box-shadow: 
+                    -8px 0 0 #ff00ff,
+                    8px 0 0 #00ffff,
+                    0 0 60px rgba(255, 255, 0, 1);
+            }
+            65% {
+                transform: translateX(-50%) scale(0.95) rotateZ(0.5deg);
+            }
+            80% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1.05) rotateZ(-0.5deg);
+                filter: hue-rotate(0deg) saturate(1);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(-50%) scale(1) rotateZ(0deg);
+                filter: hue-rotate(0deg) saturate(1);
+                box-shadow: 0 0 25px rgba(255, 255, 0, 0.7);
+            }
+        }
+        
         .subtitle {
-            font-size: 1.2rem;
-            color: var(--cyan);
-            letter-spacing: 4px;
-            text-shadow: 0 0 8px var(--cyan);
-            margin-bottom: 44px;
-        }
-
-        @keyframes glitch {
-            0%,88%,100% { transform: translate(0); filter: none; }
-            89% { transform: translate(-2px, 1px); filter: hue-rotate(90deg); }
-            90% { transform: translate(2px, -1px); }
-            91% { transform: translate(0, 1px);    filter: none; }
-            92% { transform: translate(-1px, 0); }
-            93% { transform: translate(0); }
-        }
-
-        /* ── MODE LABEL ─────────────────────────────────────── */
-        .mode-label {
-            font-size: 1rem;
+            font-size: 1.5rem;
+            color: #00ff00;
             letter-spacing: 3px;
-            color: #444;
-            margin-bottom: 20px;
-            text-transform: uppercase;
+            text-shadow: 0 0 6px #00ff00;
+        }
+        
+        @keyframes glitch {
+            0%, 90%, 100% {
+                transform: translate(0);
+            }
+            91% {
+                transform: translate(-2px, 2px);
+            }
+            92% {
+                transform: translate(2px, -2px);
+            }
+            93% {
+                transform: translate(-2px, 2px);
+            }
+            94% {
+                transform: translate(0);
+            }
+        }
+        
+        /* Main layout */
+        .main-layout {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* Spot Menu */
+        .spot-menu {
+            flex: 0 0 350px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #00ff00;
+            padding: 0;
+            overflow: hidden;
+            max-height: 100%;
+            display: flex;
+            flex-direction: column;
         }
 
-        /* ── TOGGLE ROW ─────────────────────────────────────── */
-        .toggle-row {
+        .spot-menu-sticky {
+            flex-shrink: 0;
+            padding: 10px 10px 0 10px;
+        }
+
+        .spot-list-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 10px 10px 10px;
+        }
+
+        .spot-list-scroll::-webkit-scrollbar { width: 12px; }
+        .spot-list-scroll::-webkit-scrollbar-track { background: #000; border: 1px solid #00ff00; }
+        .spot-list-scroll::-webkit-scrollbar-thumb { background: #00ff00; border: 2px solid #000; }
+        .spot-list-scroll::-webkit-scrollbar-thumb:hover { background: #ffff00; }
+        
+        .spot-menu-title-legacy { display: none; }
+        
+        .spot-item {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #ff02ff;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.3rem;
+            color: #00efef;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .spot-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+            transition: left 0.5s;
+        }
+        
+        .spot-item:hover::before {
+            left: 100%;
+        }
+        
+        .spot-item:hover {
+            background: rgba(0, 255, 0, 0.3);
+            border-color: #ffff00;
+            color: #ffff00;
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+        }
+        
+        .spot-item.active  {
+            background: rgba(225, 225, 0, 0.21);
+            border-color: #ffff02;
+            color: #e0e000;
+            box-shadow: 0 0 10px rgba(219, 219, 3, 0.5);
+        }
+        
+        /* Video Container */
+        .video-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(0, 0, 0, 0.7);
+            border: 3px solid #00ffff;
+            padding: 10px;
+            overflow: hidden;
+        }
+        
+        .video-title {
+            font-size: 2rem;
+            color: #ff00ff;
+            text-align: center;
+            margin-bottom: 6px;
+            padding: 10px;
+            background: #1a001a;
+            border: 2px solid #ff00ff;
+            text-shadow: 0 0 8px #ff00ff;
+        }
+        
+        .video-wrapper {
+            flex: 1;
+            position: relative;
+            background: #000;
+            border: 2px solid #ffff00;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 20px;
-            margin-bottom: 44px;
+            overflow: hidden;
+            contain: layout paint;
+        }
+        
+        .video-wrapper video {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .placeholder {
+            font-size: 2.5rem;
+            color: #02ff02;
+            text-align: center;
+            text-shadow: 0 0 20px #03c403;
+        }
+        
+        @keyframes blink {
+            0%, 50%, 100% { opacity: 1; }
+            25%, 75% { opacity: 0.3; }
+        }
+        
+        /* Static canvas for video transitions */
+        .static-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.15s;
+            z-index: 10;
+        }
+
+        .static-overlay.active {
+            opacity: 1;
+        }
+
+        #staticCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+        
+        
+        /* ── COMBINED CONTROLS BAR (static + loop + tracking) ─────────── */
+        .static-toggle-bar {
+            display: flex;
+            align-items: stretch;
+            flex-wrap: wrap;
+            gap: 0;
+            margin-bottom: 6px;
+            padding: 0;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid #333;
             user-select: none;
+            overflow: hidden;
         }
 
-        .mode-name {
-            font-size: 2rem;
-            letter-spacing: 3px;
-            transition: color 0.25s, text-shadow 0.25s;
-            cursor: pointer;
-            min-width: 90px;
+        .static-toggle-bar:hover { border-color: #444; }
+
+        /* Each labelled group inside the bar */
+        .ctrl-section {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 4px 10px;
+            flex-shrink: 0;
         }
 
-        .mode-name.full {
-            text-align: right;
-            color: var(--green);
-            text-shadow: 0 0 12px var(--green);
+        /* Tracking section stretches to fill leftover space */
+        .ctrl-section.tracking-section {
+            flex: 1;
+            min-width: 150px;
         }
 
-        .mode-name.classic {
-            text-align: left;
-            color: #333;
-            text-shadow: none;
+        /* Vertical divider — full bar height via align-items: stretch */
+        .ctrl-divider {
+            width: 1px;
+            background: #2a2a2a;
+            flex-shrink: 0;
+            align-self: stretch;
         }
 
-        /* toggled state */
-        .toggle-row.classic-mode .mode-name.full {
-            color: #333;
-            text-shadow: none;
-        }
-        .toggle-row.classic-mode .mode-name.classic {
-            color: var(--magenta);
-            text-shadow: 0 0 12px var(--magenta);
+        /* Labels */
+        .static-toggle-label,
+        .loop-toggle-label,
+        .tracking-label {
+            white-space: nowrap;
+            flex-shrink: 0;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
         }
 
-        /* The physical toggle */
-        .toggle-switch {
+        .static-toggle-label { color: #00ff00; text-shadow: 0 0 5px #00ff00; }
+        .loop-toggle-label   { color: #ff00ff; text-shadow: 0 0 5px #ff00ff; }
+        .tracking-label      { color: #00ffff; text-shadow: 0 0 5px #00ffff; }
+
+        .toggle-icon { font-size: 0.85rem; }
+
+        /* Toggle switch — smaller than before */
+        .toggle-switch-wrap {
             position: relative;
-            width: 64px;
-            height: 30px;
+            display: inline-flex;
+            align-items: center;
             cursor: pointer;
             flex-shrink: 0;
         }
 
-        .toggle-switch input {
-            opacity: 0;
-            width: 0; height: 0;
+        .toggle-switch-wrap input[type="checkbox"] {
             position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
         }
 
         .toggle-track {
-            position: absolute;
-            inset: 0;
-            background: #111;
-            border: 2px solid var(--green);
+            display: inline-block;
+            width: 32px;
+            height: 16px;
+            background: #1a1a1a;
+            border: 2px solid #444;
             border-radius: 0;
-            box-shadow: 0 0 8px rgba(0,255,0,0.4);
-            transition: border-color 0.25s, box-shadow 0.25s;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s, border-color 0.2s;
         }
 
         .toggle-thumb {
             position: absolute;
-            top: 3px;
-            left: 3px;
-            width: 20px;
-            height: 20px;
-            background: var(--green);
-            box-shadow: 0 0 8px var(--green);
-            transition: transform 0.25s, background 0.25s, box-shadow 0.25s;
+            top: 2px;
+            left: 2px;
+            width: 8px;
+            height: 8px;
+            background: #444;
+            transition: transform 0.2s, background 0.2s;
         }
 
-        input:checked + .toggle-track {
-            border-color: var(--magenta);
-            box-shadow: 0 0 8px rgba(255,0,255,0.4);
-        }
-        input:checked + .toggle-track .toggle-thumb {
-            transform: translateX(34px);
-            background: var(--magenta);
-            box-shadow: 0 0 8px var(--magenta);
+        input[type="checkbox"]:checked + .toggle-track {
+            background: rgba(0,255,0,0.15);
+            border-color: #00ff00;
+            box-shadow: 0 0 6px rgba(0,255,0,0.4);
         }
 
-        /* ── LAUNCH BUTTON ──────────────────────────────────── */
-        .launch-btn {
-            font-family: 'VT323', monospace;
-            font-size: 1.8rem;
-            letter-spacing: 4px;
-            color: #000;
-            background: var(--green);
-            border: none;
-            padding: 12px 40px;
-            cursor: pointer;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            transition: background 0.25s, box-shadow 0.25s, transform 0.1s;
-            box-shadow: 0 0 20px rgba(0,255,0,0.4), 4px 4px 0 rgba(0,255,0,0.2);
+        input[type="checkbox"]:checked + .toggle-track .toggle-thumb {
+            transform: translateX(16px);
+            background: #00ff00;
+            box-shadow: 0 0 4px #00ff00;
         }
 
-        .launch-btn::before {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%;
-            width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
-            transition: left 0.4s;
+        input[type="checkbox"]#loopToggle:checked + .toggle-track {
+            background: rgba(255,0,255,0.15);
+            border-color: #ff00ff;
+            box-shadow: 0 0 6px rgba(255,0,255,0.4);
         }
 
-        .launch-btn:hover::before { left: 100%; }
-        .launch-btn:hover {
-            box-shadow: 0 0 30px rgba(0,255,0,0.7), 4px 4px 0 rgba(0,255,0,0.3);
-        }
-        .launch-btn:active { transform: scale(0.97); }
-
-        .launch-btn.classic-active {
-            background: var(--magenta);
-            box-shadow: 0 0 20px rgba(255,0,255,0.4), 4px 4px 0 rgba(255,0,255,0.2);
-        }
-        .launch-btn.classic-active:hover {
-            box-shadow: 0 0 30px rgba(255,0,255,0.7), 4px 4px 0 rgba(255,0,255,0.3);
+        input[type="checkbox"]#loopToggle:checked + .toggle-track .toggle-thumb {
+            transform: translateX(16px);
+            background: #ff00ff;
+            box-shadow: 0 0 4px #ff00ff;
         }
 
-        /* ── FOOTER STATUS BAR ──────────────────────────────── */
-        .status-bar {
-            margin-top: 28px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        .toggle-status,
+        #loopStatus {
             font-size: 0.85rem;
-            letter-spacing: 2px;
-            color: #2a2a2a;
-            border-top: 1px solid #1a1a1a;
-            padding-top: 14px;
+            letter-spacing: 1px;
+            min-width: 22px;
+            flex-shrink: 0;
         }
 
-        .status-dot {
+        .toggle-status     { color: #00ff00; text-shadow: 0 0 4px #00ff00; }
+        .toggle-status.off { color: #444;    text-shadow: none; }
+        #loopStatus        { color: #ff00ff; text-shadow: 0 0 4px #ff00ff; }
+        #loopStatus.off    { color: #444;    text-shadow: none; }
+
+        /* Tracking slider — fills available space, never overflows */
+        #trackingSlider {
+            flex: 1;
+            min-width: 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: #111;
+            border: 1px solid #333;
+            outline: none;
+            cursor: pointer;
+        }
+
+        #trackingSlider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 13px;
+            height: 13px;
+            background: #ff00ff;
+            border: 2px solid #ffff00;
+            cursor: pointer;
+            box-shadow: 0 0 5px #ff00ff;
+        }
+
+        #trackingSlider::-moz-range-thumb {
+            width: 13px;
+            height: 13px;
+            background: #ff00ff;
+            border: 2px solid #ffff00;
+            cursor: pointer;
+            box-shadow: 0 0 5px #ff00ff;
+        }
+
+        #trackingReset {
+            font-family: 'VT323', monospace;
+            font-size: 0.9rem;
+            color: #ffff00;
+            border: 1px solid #ffff00;
+            background: transparent;
+            padding: 1px 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.2s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            line-height: 1.4;
+        }
+
+        #trackingReset:hover {
+            background: rgba(255,255,0,0.15);
+            box-shadow: 0 0 6px #ffff00;
+        }
+
+        /* Responsive: tracking section wraps to its own row below 640px */
+        @media screen and (max-width: 640px) {
+            .ctrl-section { padding: 4px 8px; gap: 5px; }
+            .ctrl-section.tracking-section {
+                flex-basis: 100%;
+                border-top: 1px solid #222;
+            }
+            .ctrl-divider { display: none; }
+        }
+
+        /* Ticker footer (outside CRT) */
+        .ticker-footer {
+            width: 100%;
+            max-width: 95%;
+            background: #000;
+            border: 5px solid #ff00ff;
+            padding: 7px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            flex-shrink: 0;
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* Flash on click */
+        .ticker-footer.ticker-flash {
+            border-color: #ffff00;
+            box-shadow: 0 0 18px rgba(255,255,0,0.6);
+        }
+
+        .ticker-content {
             display: inline-block;
-            width: 7px;
-            height: 7px;
-            background: var(--green);
-            box-shadow: 0 0 6px var(--green);
-            margin-right: 6px;
-            animation: blink 1.4s step-start infinite;
+            font-size: 1.2rem;
+            color: #00ffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 5px #00ffff;
+            white-space: nowrap;
+            will-change: transform;
+            transform: translateZ(0);
         }
 
-        @keyframes blink {
-            0%,100% { opacity: 1; }
-            50%      { opacity: 0; }
+        @keyframes tickerScroll {
+            from { transform: translateX(calc(90vw + 40px)); }
+            to   { transform: translateX(-100%); }
         }
 
-        /* ── BOOT LINES (decorative) ────────────────────────── */
-        .boot-lines {
+        /* Channel display OSD */
+        .channel-display {
             position: absolute;
-            top: 8px;
-            left: 0; right: 0;
+            top: 12px;
+            right: 14px;
+            font-family: 'VT323', monospace;
+            font-size: 2rem;
+            color: #fff;
+            text-shadow: 0 0 6px #fff;
+            letter-spacing: 2px;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+
+        }
+
+        .channel-display.visible {
+            opacity: 1;
+        }
+
+        /* EASTER easter egg overlay */
+        .EASTER-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+        }
+
+        .EASTER-overlay.active {
+            display: flex;
+            animation: EASTERFlash 0.3s;
+        }
+
+        @keyframes EASTERFlash {
+            0%,100% { background: rgba(0,0,0,0.92); }
+            50% { background: rgba(255,0,255,0.3); }
+        }
+
+        .EASTER-text {
+            font-size: 3rem;
+            animation: rainbowText 1s linear infinite, glitch 0.5s infinite;
+            letter-spacing: 4px;
+            margin-bottom: 20px;
+        }
+
+        .EASTER-subtext {
+            font-size: 1.8rem;
+            color: #00ffff;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px #00ffff;
+            margin-bottom: 30px;
+            animation: blink 1s infinite;
+        }
+
+        .EASTER-close {
+            font-size: 1.3rem;
+            color: #ffff00;
+            border: 2px solid #ffff00;
+            padding: 10px 30px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            background: transparent;
+            font-family: 'VT323', monospace;
+            transition: all 0.2s;
+        }
+
+        .EASTER-close:hover {
+            background: rgba(255,255,0,0.2);
+            box-shadow: 0 0 20px #ffff00;
+        }
+
+        /* Easter egg video screen */
+        .easter-video-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: #000;
+            z-index: 3000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .easter-video-overlay.active {
+            display: flex;
+        }
+
+        #easterVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .easter-close-btn {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            font-family: 'VT323', monospace;
+            font-size: 1.6rem;
+            color: #ffff00;
+            border: 2px solid #ffff00;
+            background: rgba(0,0,0,0.7);
+            padding: 6px 18px;
+            cursor: pointer;
+            letter-spacing: 2px;
+            z-index: 3001;
+            transition: all 0.2s;
+            text-shadow: 0 0 8px #ffff00;
+        }
+
+        .easter-close-btn:hover {
+            background: rgba(255,255,0,0.2);
+            box-shadow: 0 0 20px #ffff00;
+        }
+
+        /* Social links panel overlaid on easter video */
+        .easter-links {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            z-index: 3001;
+            padding: 0 20px;
+        }
+
+        .easter-link-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            color: #000;
+            background: #00ffff;
+            border: 3px solid #fff;
+            padding: 8px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.15s;
+            box-shadow: 0 0 12px rgba(0,255,255,0.5), 3px 3px 0 rgba(0,0,0,0.8);
+            white-space: nowrap;
+        }
+
+        .easter-link-btn:hover {
+            background: #fff;
+            color: #000;
+            transform: scale(1.07) translateY(-2px);
+            box-shadow: 0 0 25px rgba(0,255,255,0.9), 3px 3px 0 rgba(0,0,0,0.8);
+        }
+
+        .easter-link-btn:active {
+            transform: scale(0.97) translateY(0);
+        }
+
+        .easter-link-icon {
+            font-size: 1.3rem;
+            line-height: 1;
+        }
+
+        @keyframes rainbowText {
+            0%   { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+            16%  { color: #ff8800; text-shadow: 0 0 10px #ff8800; }
+            33%  { color: #ffff00; text-shadow: 0 0 10px #ffff00; }
+            50%  { color: #00ff00; text-shadow: 0 0 10px #00ff00; }
+            66%  { color: #00ffff; text-shadow: 0 0 10px #00ffff; }
+            83%  { color: #ff00ff; text-shadow: 0 0 10px #ff00ff; }
+            100% { color: #ff0000; text-shadow: 0 0 10px #ff0000; }
+        }
+
+        /* Screen shake */
+        @keyframes screenShake {
+            0%,100% { transform: translate(0,0); }
+            10% { transform: translate(-5px, 4px); }
+            20% { transform: translate(5px, -4px); }
+            30% { transform: translate(-4px, 5px); }
+            40% { transform: translate(4px, -5px); }
+            50% { transform: translate(-6px, 3px); }
+            60% { transform: translate(6px, -3px); }
+            70% { transform: translate(-3px, 6px); }
+            80% { transform: translate(3px, -6px); }
+            90% { transform: translate(-5px, 4px); }
+        }
+
+        .crt-container.shake {
+            animation: screenShake 0.5s ease;
+        }
+
+        /* ========================================== */
+        /* RESPONSIVE STYLES FOR MOBILE */
+        /* ========================================== */
+        
+        @media screen and (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+                min-height: 100vh;
+            }
+            
+            .crt-container {
+                width: 95vw;
+                height: auto;
+                min-height: 90vh;
+                border: 2px solid #00ff00;
+                border-radius: 12px;
+            }
+            
+            .crt-screen {
+                overflow-y: auto;
+            }
+            
+            .content {
+                padding: 8px;
+                height: auto;
+                min-height: 90vh;
+            }
+            
+            /* Mobile Header */
+            .header {
+                margin-bottom: 20px;
+            }
+            
+            .header h1 {
+                font-size: 2.2rem;
+                letter-spacing: 3px;
+                text-shadow: 
+                    2px 2px 0 #00ffff,
+                    -1px -1px 0 #ffff00,
+                    0 0 15px #ff00ff;
+            }
+            
+            .title-popup {
+                font-size: 0.9rem;
+                padding: 8px 15px;
+                white-space: normal;
+                max-width: 80vw;
+                bottom: -50px;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+                letter-spacing: 2px;
+            }
+            
+            /* Stack layout vertically on mobile */
+            .main-layout {
+                flex-direction: column;
+                gap: 15px;
+                overflow: visible;
+            }
+            
+            /* Mobile Spot Menu */
+            .spot-menu {
+                flex: none;
+                width: 100%;
+                max-height: 40vh;
+                padding: 0;
+                border: 2px solid;
+            }
+
+            .spot-menu-sticky { padding: 8px 8px 0 8px; }
+            .spot-list-scroll { padding: 6px 8px 8px 8px; }
+            
+            .spot-menu-header {
+                font-size: 1.15rem;
+                margin-bottom: 8px;
+            }
+            
+            .spot-item {
+                padding: 15px 10px;
+                margin-bottom: 8px;
+                font-size: 1.2rem;
+                border: 2px solid #ff02ff;
+                /* Larger touch targets for mobile */
+                min-height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            
+            /* Mobile Video Container */
+            .video-container {
+                flex: none;
+                width: 100%;
+                min-height: 60vh;
+                padding: 12px;
+                border: 2px solid #00ffff;
+            }
+            
+            .video-title {
+                font-size: 1.5rem;
+                margin-bottom: 12px;
+                padding: 8px;
+                border: 2px solid ##ff00ff;
+            }
+            
+            .video-wrapper {
+                min-height: 50vh;
+                border: 2px solid #00ffff;
+            }
+            
+            .placeholder {
+                font-size: 1.5rem;
+                padding: 20px;
+            }
+            
+            /* Scrollbar for mobile */
+            .spot-list-scroll::-webkit-scrollbar { width: 8px; }
+        }
+        
+        /* Extra small screens (phones in portrait) */
+        @media screen and (max-width: 480px) {
+            .crt-container {
+                width: 98vw;
+                border: 4px solid;
+                border-radius: 8px;
+            }
+            
+            .content {
+                padding: 6px;
+            }
+            
+            .header h1 {
+                font-size: 1.8rem;
+                letter-spacing: 2px;
+            }
+            
+            .title-popup {
+                font-size: 0.8rem;
+                padding: 6px 12px;
+                bottom: -45px;
+            }
+            
+            .subtitle {
+                font-size: 0.95rem;
+                letter-spacing: 1px;
+            }
+            
+            .spot-menu-header {
+                font-size: 1.3rem;
+            }
+            
+            .spot-item {
+                font-size: 1.1rem;
+                padding: 12px 8px;
+            }
+            
+            .video-title {
+                font-size: 1.3rem;
+                padding: 6px;
+            }
+            
+            .placeholder {
+                font-size: 1.2rem;
+                padding: 15px;
+            }
+        }
+        
+        /* Landscape mode on mobile */
+        @media screen and (max-width: 768px) and (orientation: landscape) {
+            .crt-container {
+                height: auto;
+                min-height: 95vh;
+            }
+            
+            .main-layout {
+                flex-direction: row;
+            }
+            
+            .spot-menu {
+                flex: 0 0 200px;
+                max-height: 100%;
+            }
+            
+            .video-container {
+                flex: 1;
+                min-height: auto;
+            }
+            
+            .video-wrapper {
+                min-height: 60vh;
+            }
+        }
+        
+        /* ── SPOT MENU HEADER ─────────────────────────────────────────── */
+        .spot-menu-header {
+            font-size: 1.45rem;
+            color: #ffff00;
+            text-align: center;
+            padding: 8px 6px;
+            background: #1a1a00;
+            border: 2px solid #ffff00;
+            text-shadow: 0 0 12px #ffff00;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+
+        /* ── SMPTE COLOR BARS ─────────────────────────────────────────── */
+        .smpte-bars {
+            width: 100%;
+            height: 100%;
             display: flex;
             flex-direction: column;
-            gap: 2px;
-            padding: 0 14px;
+            position: absolute;
+            top: 0; left: 0;
+        }
+
+        .smpte-top {
+            flex: 0 0 67%;
+            display: flex;
+            width: 100%;
+        }
+
+        .smpte-top .bar { flex: 1; }
+        .smpte-top .bar:nth-child(1) { background: #c0c0c0; }
+        .smpte-top .bar:nth-child(2) { background: #c0c000; }
+        .smpte-top .bar:nth-child(3) { background: #00c0c0; }
+        .smpte-top .bar:nth-child(4) { background: #00c000; }
+        .smpte-top .bar:nth-child(5) { background: #c000c0; }
+        .smpte-top .bar:nth-child(6) { background: #c00000; }
+        .smpte-top .bar:nth-child(7) { background: #0000c0; }
+
+        .smpte-mid {
+            flex: 0 0 8%;
+            display: flex;
+            width: 100%;
+        }
+
+        .smpte-mid .bar { flex: 1; }
+        .smpte-mid .bar:nth-child(1) { background: #0000c0; }
+        .smpte-mid .bar:nth-child(2) { background: #111111; }
+        .smpte-mid .bar:nth-child(3) { background: #c000c0; }
+        .smpte-mid .bar:nth-child(4) { background: #111111; }
+        .smpte-mid .bar:nth-child(5) { background: #00c0c0; }
+        .smpte-mid .bar:nth-child(6) { background: #111111; }
+        .smpte-mid .bar:nth-child(7) { background: #c0c0c0; }
+
+        .smpte-bottom {
+            flex: 1;
+            display: flex;
+            width: 100%;
+        }
+
+        .smpte-bottom .seg-left  { flex: 0 0 40%; background: #001aff; }
+        .smpte-bottom .seg-white { flex: 0 0 14%; background: #ffffff; }
+        .smpte-bottom .seg-pluge { flex: 0 0 14%; background: #090909; }
+        .smpte-bottom .seg-black { flex: 1;        background: #000000; }
+
+        .smpte-label {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 1.6rem;
+            color: #fff;
+            text-shadow: 0 0 8px #000;
+            letter-spacing: 4px;
+            background: rgba(0,0,0,0.55);
+            padding: 8px 22px;
+            border: 2px solid rgba(255,255,255,0.3);
+            animation: blink 2s infinite;
             pointer-events: none;
+            z-index: 5;
+            text-align: center;
         }
 
-        .boot-line {
-            font-size: 0.65rem;
+        /* ── TIMECODE OVERLAY ─────────────────────────────────────────── */
+        .timecode-overlay {
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-family: 'VT323', monospace;
+            font-size: 1.5rem;
+            color: #fff;
+            text-shadow: 0 0 6px #fff, 0 0 12px rgba(0,255,0,0.6);
             letter-spacing: 2px;
-            color: #1c1c1c;
-            text-align: left;
-            animation: bootReveal 0.4s both;
+            pointer-events: none;
+            z-index: 50;
+            display: none;
+            background: rgba(0,0,0,0.5);
+            padding: 2px 8px;
         }
-        .boot-line:nth-child(1) { animation-delay: 0.0s; }
-        .boot-line:nth-child(2) { animation-delay: 0.08s; }
-        .boot-line:nth-child(3) { animation-delay: 0.16s; }
 
-        @keyframes bootReveal {
-            from { opacity: 0; }
-            to   { opacity: 1; }
+        .timecode-overlay.visible {
+            display: block;
+        }
+
+        .timecode-icon {
+            display: inline-block;
+            animation: spinReel 2s linear infinite;
+        }
+
+        @keyframes spinReel {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        /* ── TRACKING SLIDER — styles now inside .static-toggle-bar above ── */
+
+        /* ── VHS CUSTOM CONTROLS ──────────────────────────────────────── */
+        .vhs-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #00ffff;
+            flex-shrink: 0;
+			margin-top: 6px;
+        }
+
+        /* Row 1: transport — Row 2: tape bar */
+        .vhs-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 8px;
+        }
+
+        /* Split row: left group | spacer | right group */
+        .vhs-row-split {
+            display: flex;
+            align-items: center;
+            padding: 5px 8px;
+            gap: 6px;
+        }
+
+        .vhs-btn-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vhs-group-spacer {
+            flex: 1;
+        }
+
+        .vhs-row + .vhs-row,
+        .vhs-row-split + .vhs-row,
+        .vhs-row + .vhs-row-split {
+            border-top: 1px solid #111;
+        }
+
+        .vhs-btn {
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            color: #00ffff;
+            border: 2px solid #00ffff;
+            background: rgba(0,255,255,0.07);
+            /* Fixed height + line-height so emoji/text never shifts the row */
+            height: 28px;
+            line-height: 24px;
+            padding: 0 10px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.15s;
+            white-space: nowrap;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .vhs-btn:hover {
+            background: rgba(0,255,255,0.2);
+            box-shadow: 0 0 10px #00ffff;
+            color: #fff;
+        }
+
+        .vhs-btn:active { transform: scale(0.95); }
+
+        #playPauseBtn {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0,255,0,0.07);
+            width: 96px;   /* fixed — never shifts */
+        }
+
+        #playPauseBtn:hover {
+            background: rgba(0,255,0,0.2);
+            box-shadow: 0 0 10px #00ff00;
+        }
+
+        /* Cassette reel progress */
+        .vhs-reel-wrap {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .reel {
+            width: 26px;
+            height: 26px;
+            border: 3px solid #00ffff;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .reel::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border: 2px solid #00ffff;
+            border-radius: 50%;
+            background: #000;
+        }
+
+        .reel-left  { animation: none; }
+        .reel-right { animation: none; }
+
+        .reel.spinning {
+            animation: reelSpin 1.2s linear infinite;
+        }
+
+        .reel-right.spinning {
+            animation: reelSpin 1.2s linear infinite reverse;
+        }
+
+        @keyframes reelSpin {
+            from { transform: rotate(0deg); }
+            to   { transform: rotate(360deg); }
+        }
+
+        .vhs-tape-track {
+            flex: 1;
+            height: 14px;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .vhs-tape-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00ff00, #00ffff);
+            box-shadow: none;
+            transition: width 0.25s linear;
+            position: relative;
+        }
+
+        /* Sprocket holes on the track */
+        .vhs-tape-track::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent 0px,
+                transparent 18px,
+                rgba(0,0,0,0.5) 18px,
+                rgba(0,0,0,0.5) 20px
+            );
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        /* ── CRT VOLUME INDICATOR ─────────────────────────────────────── */
+        .crt-volume-hud {
+            position: absolute;
+            bottom: 14px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            pointer-events: none;
+            z-index: 60;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .crt-volume-hud.visible {
+            opacity: 1;
+        }
+
+        .crt-vol-label {
+            font-family: 'VT323', monospace;
+            font-size: 1.15rem;
+            color: #00ff00;
+            letter-spacing: 3px;
+            text-shadow: 0 0 8px #00ff00, 0 0 16px rgba(0,255,0,0.4);
+        }
+
+        .crt-vol-bars {
+            display: flex;
+            align-items: flex-end;
+            gap: 3px;
+            height: 28px;
+        }
+
+        .crt-vol-bar {
+            width: 9px;
+            background: #00ff00;
+            box-shadow: none;
+            transition: height 0.1s ease, background 0.1s, box-shadow 0.1s;
+            border-radius: 1px 1px 0 0;
+        }
+
+        /* muted state — all bars dimmed */
+        .crt-volume-hud.muted .crt-vol-bar {
+            background: #333;
+            box-shadow: none;
+        }
+
+        .crt-vol-bar.peak {
+            background: #ff4400;
+            box-shadow: 0 0 8px #ff4400;
+        }
+
+        /* ── MUTE BUTTON ACCENT ──────────────────────────────────────── */
+        #muteBtn {
+            color: #ffff00;
+            border-color: #ffff00;
+            background: rgba(255,255,0,0.07);
+            width: 96px;   /* matches play/pause — never shifts */
+        }
+        #muteBtn:hover {
+            background: rgba(255,255,0,0.2);
+            box-shadow: 0 0 10px #ffff00;
+            color: #fff;
+        }
+
+        #volDownBtn, #volUpBtn {
+            color: #00ffff;
+            border-color: #00ffff;
+            width: 60px;
+        }
+
+        /* ── RESPONSIVE ADDITIONS ─────────────────────────────────────── */
+        @media screen and (max-width: 768px) {
+            .spot-menu-header { font-size: 1.2rem; padding: 6px; }
+            .timecode-overlay { font-size: 1.1rem; bottom: 8px; }
+            .vhs-btn { font-size: 1rem; height: 26px; padding: 0 7px; }
+            #playPauseBtn, #muteBtn { width: 80px; }
+            #volDownBtn, #volUpBtn { width: 50px; }
+            .vhs-row { gap: 4px; padding: 4px 6px; }
+            .reel { width: 18px; height: 18px; }
+            .reel::before { width: 6px; height: 6px; }
+            .tracking-label { font-size: 0.9rem; }
+            .crt-vol-bar { width: 7px; }
+        }
+
+        /* Tablet portrait */
+        @media screen and (min-width: 769px) and (max-width: 1024px) {
+            .header h1 {
+                font-size: 3rem;
+                letter-spacing: 5px;
+            }
+            
+            .subtitle {
+                font-size: 1.3rem;
+            }
+            
+            .spot-menu {
+                flex: 0 0 240px;
+            }
+            
+            .spot-menu-header {
+                font-size: 1.7rem;
+            }
+            
+            .spot-item {
+                font-size: 1.2rem;
+                padding: 12px;
+            }
+            
+            .video-title {
+                font-size: 1.8rem;
+            }
+            
+            .placeholder {
+                font-size: 2rem;
+            }
         }
     </style>
 </head>
 <body>
-
-<div class="card">
-    <!-- decorative boot text -->
-    <div class="boot-lines" aria-hidden="true">
-        <div class="boot-line">BIOS v2.4.1 … OK</div>
-        <div class="boot-line">CHECKING MEDIA … FOUND</div>
-        <div class="boot-line">LOADING EXPERIENCE…</div>
+    <!-- Easter Egg Video Screen -->
+    <div class="easter-video-overlay" id="easterVideoOverlay">
+        <video id="easterVideo" loop playsinline></video>
+        <div class="easter-links" id="easterLinks"></div>
+        <button class="easter-close-btn" id="easterCloseBtn">[ ✕ CLOSE ]</button>
     </div>
 
-    <div class="title">"TOUR DE MAUI"</div>
-    <div class="subtitle">// SKATE SPOT SHOWCASE //</div>
+    <div class="crt-container">
+        <div class="crt-screen">
+            <div class="vhs-noise"></div>
+            <div class="content">
+                <a class="back-btn" href="index.html">◄ BACK</a>
+                <div class="header">
+                    <h1 id="mainTitle">
+                        "TOUR DE MAUI"
+                        <div class="title-popup" id="joinButton">▲ CLICK TO JOIN THE TOUR ▲</div>
+                    </h1>
+                    <div class="subtitle">// SKATE SPOT SHOWCASE //</div>
+                </div>
+                
+                <!-- EASTER Easter Egg Overlay -->
+                <div class="EASTER-overlay" id="EASTEROverlay">
+                    <div class="EASTER-text">🛹 SKATE OR DIE 🛹</div>
+                    <div class="EASTER-subtext">// CHEAT CODE ACTIVATED //<br>YOU FOUND THE SECRET!</div>
+                    <button class="EASTER-close" id="EASTERClose">[ OK LET'S SKATE ]</button>
+                </div>
 
-    <div class="mode-label">[ SELECT MODE ]</div>
-
-    <div class="toggle-row" id="toggleRow">
-        <span class="mode-name full" id="labelFull" onclick="setMode(false)">FULL</span>
-
-        <label class="toggle-switch" title="Switch mode">
-            <input type="checkbox" id="modeToggle">
-            <span class="toggle-track"><span class="toggle-thumb"></span></span>
-        </label>
-
-        <span class="mode-name classic" id="labelClassic" onclick="setMode(true)">CLASSIC</span>
+                <div class="main-layout">
+                    <div class="spot-menu">
+                        <div class="spot-menu-sticky">
+                            <div class="spot-menu-header" id="spotMenuHeader">[ SELECT A SPOT ] [ 0 ]</div>
+                        </div>
+                        <div class="spot-list-scroll">
+                            <div id="spotList">
+                                <!-- Spots will be loaded from config below -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="video-container">
+                        <div class="video-title" id="videoTitle">SELECT A SPOT</div>
+                        <div class="static-toggle-bar" id="staticToggleBar">
+                            <!-- Static section -->
+                            <div class="ctrl-section">
+                                <span class="static-toggle-label"><span class="toggle-icon">📡</span> STATIC</span>
+                                <div class="toggle-switch-wrap" id="toggleSwitchWrap">
+                                    <input type="checkbox" id="staticToggle">
+                                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                                </div>
+                                <span class="toggle-status" id="toggleStatus">OFF</span>
+                            </div>
+                            <div class="ctrl-divider"></div>
+                            <!-- Loop section -->
+                            <div class="ctrl-section">
+                                <span class="loop-toggle-label">🔁 LOOP</span>
+                                <div class="toggle-switch-wrap" id="loopSwitchWrap">
+                                    <input type="checkbox" id="loopToggle" checked>
+                                    <span class="toggle-track"><span class="toggle-thumb"></span></span>
+                                </div>
+                                <span id="loopStatus">ON</span>
+                            </div>
+                            <div class="ctrl-divider"></div>
+                            <!-- Tracking section -->
+                            <div class="ctrl-section tracking-section">
+                                <span class="tracking-label">🎛 TRACKING</span>
+                                <input type="range" id="trackingSlider" min="0" max="100" value="0">
+                                <button id="trackingReset">[ RESET ]</button>
+                            </div>
+                        </div>
+                        <div class="video-wrapper">
+                            <div class="placeholder" id="placeholder">
+                                <div class="smpte-bars">
+                                    <div class="smpte-top">
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                    <div class="smpte-mid">
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                                        <div class="bar"></div>
+                                    </div>
+                                    <div class="smpte-bottom">
+                                        <div class="seg-left"></div>
+                                        <div class="seg-white"></div>
+                                        <div class="seg-pluge"></div>
+                                        <div class="seg-black"></div>
+                                    </div>
+                                </div>
+                                <div class="smpte-label">▶ SELECT A SPOT ◀<br><span style="font-size:1rem;letter-spacing:2px;">[ WAITING FOR SELECTION... ]</span></div>
+                            </div>
+                            <video id="videoPlayer" preload="none" style="display: none;">
+                                Your browser does not support the video tag.
+                            </video>
+                            <div class="static-overlay" id="staticOverlay">
+                                <canvas id="staticCanvas"></canvas>
+                            </div>
+                            <div class="channel-display" id="channelDisplay">CH 00</div>
+                            <div class="timecode-overlay" id="timecodeOverlay">
+                                <span class="timecode-icon">📼</span> <span id="timecodeCurrentTime">00:00</span> / <span id="timecodeDuration">00:00</span>
+                            </div>
+                            <!-- CRT Volume HUD -->
+                            <div class="crt-volume-hud" id="crtVolumeHud">
+                                <div class="crt-vol-bars" id="crtVolBars"></div>
+                                <div class="crt-vol-label" id="crtVolLabel">VOL 10</div>
+                            </div>
+                        </div>
+                        <!-- VHS custom scrubber controls -->
+                        <div class="vhs-controls">
+                            <!-- Row 1: Left = transport, Right = volume -->
+                            <div class="vhs-row-split">
+                                <div class="vhs-btn-group">
+                                    <button class="vhs-btn" id="rewBtn">◄◄ REW</button>
+                                    <button class="vhs-btn" id="playPauseBtn">► PLAY</button>
+                                    <button class="vhs-btn" id="ffBtn">FF ►►</button>
+                                </div>
+                                <div class="vhs-group-spacer"></div>
+                                <div class="vhs-btn-group">
+                                    <button class="vhs-btn" id="volDownBtn">VOL −</button>
+                                    <button class="vhs-btn" id="volUpBtn">VOL +</button>
+                                    <button class="vhs-btn" id="muteBtn">🔊  MUTE </button>
+                                </div>
+                            </div>
+                            <!-- Row 2: Cassette reel progress bar -->
+                            <div class="vhs-row">
+                                <div class="vhs-reel-wrap">
+                                    <div class="reel reel-left" id="reelLeft"></div>
+                                    <div class="vhs-tape-track" id="vhsTapeTrack">
+                                        <div class="vhs-tape-fill" id="vhsTapeFill"></div>
+                                    </div>
+                                    <div class="reel reel-right" id="reelRight"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="ticker-footer">
+        <span class="ticker-content" id="tickerContent"></span>
     </div>
 
-    <button class="launch-btn" id="launchBtn" onclick="launch()">
-        [ LAUNCH FULL ]
-    </button>
+    <script>
+        // ═══════════════════════════════════════════════════════════════════
+        // CONFIG — loaded from config.json
+        // Edit config.json to update spots, ticker phrases, and links.
+        // ═══════════════════════════════════════════════════════════════════
 
-    <div class="status-bar">
-        <span><span class="status-dot"></span>READY</span>
-        <span id="modeIndicator">MODE: FULL</span>
-        <span>TDM v1.0</span>
-    </div>
-</div>
+        let CONFIG = {};
 
-<script>
-    const toggle       = document.getElementById('modeToggle');
-    const toggleRow    = document.getElementById('toggleRow');
-    const launchBtn    = document.getElementById('launchBtn');
-    const modeIndicator = document.getElementById('modeIndicator');
+        // ═══════════════════════════════════════════════════════════════════
+        // END OF CONFIG
+        // ═══════════════════════════════════════════════════════════════════
+        
+        const videoPlayer = document.getElementById('videoPlayer');
+        const placeholder = document.getElementById('placeholder');
+        const videoTitle = document.getElementById('videoTitle');
+        const staticOverlay = document.getElementById('staticOverlay');
+        const staticCanvas = document.getElementById('staticCanvas');
+        const spotList = document.getElementById('spotList');
+        const mainTitle = document.getElementById('mainTitle');
+        const EASTEROverlay = document.getElementById('EASTEROverlay');
+        const EASTERClose = document.getElementById('EASTERClose');
+        const easterVideoOverlay = document.getElementById('easterVideoOverlay');
+        const easterVideo = document.getElementById('easterVideo');
+        const easterCloseBtn = document.getElementById('easterCloseBtn');
+        const easterLinksEl = document.getElementById('easterLinks');
+        const crtContainer = document.querySelector('.crt-container');
+        const tickerEl = document.getElementById('tickerContent');
+        const channelDisplay = document.getElementById('channelDisplay');
+        const staticToggle = document.getElementById('staticToggle');
+        const toggleStatus = document.getElementById('toggleStatus');
+        const staticToggleBar = document.getElementById('staticToggleBar');
 
-    // ── File paths ────────────────────────────────────────────────────────────
-    // Update these to match your actual file names / paths
-    const PATHS = {
-        full:    'full.html',
-        classic: 'classic.html',
-    };
+        let currentSpotIndex = -1;
+        let staticRafId = null;
+        let cachedSpotItems = [];
 
-    let isClassic = false;
-
-    function setMode(classic) {
-        isClassic = classic;
-        toggle.checked = classic;
-        updateUI();
-    }
-
-    function updateUI() {
-        if (isClassic) {
-            toggleRow.classList.add('classic-mode');
-            launchBtn.textContent = '[ LAUNCH CLASSIC ]';
-            launchBtn.classList.add('classic-active');
-            modeIndicator.textContent = 'MODE: CLASSIC';
-        } else {
-            toggleRow.classList.remove('classic-mode');
-            launchBtn.textContent = '[ LAUNCH FULL ]';
-            launchBtn.classList.remove('classic-active');
-            modeIndicator.textContent = 'MODE: FULL';
+        // ── STATIC TOGGLE + LOCALSTORAGE ─────────────────────────────────────
+        function applyToggleState(on) {
+            staticToggle.checked = on;
+            if (on) {
+                toggleStatus.textContent = 'ON';
+                toggleStatus.classList.remove('off');
+            } else {
+                toggleStatus.textContent = 'OFF';
+                toggleStatus.classList.add('off');
+            }
+            try { localStorage.setItem('staticEnabled', on ? '1' : '0'); } catch(e) {}
         }
-    }
 
-    function launch() {
-        // Brief flash effect before navigating
-        launchBtn.style.opacity = '0.5';
-        setTimeout(() => {
-            window.location.href = isClassic ? PATHS.classic : PATHS.full;
-        }, 120);
-    }
+        // Load saved state (default ON)
+        (function() {
+            let saved = '1';
+            try { saved = localStorage.getItem('staticEnabled') ?? '1'; } catch(e) {}
+            applyToggleState(saved === '1');
+        })();
 
-    toggle.addEventListener('change', () => {
-        isClassic = toggle.checked;
-        updateUI();
-    });
+        // Only the toggle switch itself toggles — not the whole bar
+        document.getElementById('toggleSwitchWrap').addEventListener('click', function(e) {
+            e.stopPropagation();
+            applyToggleState(!staticToggle.checked);
+        });
 
-    // Keyboard shortcut: Enter to launch, F = Full, C = Classic
-    document.addEventListener('keydown', (e) => {
-        if (e.key === 'Enter')   launch();
-        if (e.key === 'f' || e.key === 'F') setMode(false);
-        if (e.key === 'c' || e.key === 'C') setMode(true);
-    });
-</script>
+        // ── STATIC AUDIO ─────────────────────────────────────────────────────
+        const staticAudio = new Audio('static.mp3');
+        staticAudio.volume = 0.6;
+
+        // ── CANVAS STATIC ────────────────────────────────────────────────────
+        const ctx = staticCanvas.getContext('2d');
+
+        function resizeCanvas() {
+            const wrapper = staticCanvas.parentElement.parentElement;
+            staticCanvas.width  = wrapper.clientWidth  || 640;
+            staticCanvas.height = wrapper.clientHeight || 360;
+        }
+
+        // Only resize on actual window resize, not every frame
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas, { passive: true });
+
+        function drawStatic(intensity) {
+            const w = staticCanvas.width, h = staticCanvas.height;
+            const imgData = ctx.createImageData(w, h);
+            const d = imgData.data;
+            for (let i = 0; i < d.length; i += 4) {
+                const v = Math.random() < intensity ? (Math.random() * 255 | 0) : 0;
+                d[i]   = v;
+                d[i+1] = v;
+                d[i+2] = v;
+                d[i+3] = Math.random() < intensity ? 220 : 0;
+            }
+            ctx.putImageData(imgData, 0, 0);
+
+            // Occasional bright horizontal "sync" bands
+            if (Math.random() < 0.25) {
+                const y = Math.random() * h | 0;
+                const bh = (Math.random() * 8 + 2) | 0;
+                ctx.fillStyle = `rgba(255,255,255,${Math.random() * 0.4})`;
+                ctx.fillRect(0, y, w, bh);
+            }
+        }
+
+        function runStatic(duration, onDone) {
+            cancelAnimationFrame(staticRafId);
+            const start = performance.now();
+            staticOverlay.classList.add('active');
+
+            // Play audio if file is present
+            staticAudio.currentTime = 0;
+            staticAudio.play().catch(() => {}); // silently fail if file missing
+
+            function frame(now) {
+                const t = (now - start) / duration; // 0 → 1
+                if (t >= 1) {
+                    staticOverlay.classList.remove('active');
+                    staticAudio.pause();
+                    staticAudio.currentTime = 0;
+                    onDone && onDone();
+                    return;
+                }
+                const intensity = 0.85 * (1 - t * t);
+                drawStatic(intensity);
+                staticRafId = requestAnimationFrame(frame);
+            }
+            staticRafId = requestAnimationFrame(frame);
+        }
+
+        // ── CHANNEL DISPLAY ──────────────────────────────────────────────────
+        let channelTimeout = null;
+        function showChannel() {
+            const ch = Math.floor(Math.random() * 99) + 1;
+            channelDisplay.textContent = `CH ${String(ch).padStart(2, '0')}`;
+            channelDisplay.classList.add('visible');
+            clearTimeout(channelTimeout);
+            channelTimeout = setTimeout(() => {
+                channelDisplay.classList.remove('visible');
+            }, 2200);
+        }
+
+        // ── TICKER ───────────────────────────────────────────────────────────
+        (function runTicker() {
+            const tickerFooter = tickerEl.parentElement;
+            const DEFAULT_COLOR = '#00ffff';
+            const DEFAULT_GLOW  = '#00ffff';
+
+            // Normalise every entry to { text, color, glow }
+            const phrases = CONFIG.tickerPhrases.map(p =>
+                typeof p === 'string'
+                    ? { text: p, color: DEFAULT_COLOR, glow: DEFAULT_GLOW }
+                    : { text: p.text, color: p.color || DEFAULT_COLOR, glow: p.glow || p.color || DEFAULT_GLOW }
+            );
+
+            let idx = 0;
+            let skipping = false;
+
+            function shuffle(arr) {
+                for (let i = arr.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [arr[i], arr[j]] = [arr[j], arr[i]];
+                }
+            }
+            shuffle(phrases);
+
+            function applyPhrase(entry) {
+                tickerEl.textContent = entry.text;
+                tickerEl.style.color      = entry.color;
+                tickerEl.style.textShadow = `0 0 8px ${entry.glow}, 0 0 16px ${entry.glow}44`;
+            }
+
+            function scrollPhrase() {
+                skipping = false;
+                const entry = phrases[idx % phrases.length];
+                idx++;
+                if (idx > 0 && idx % phrases.length === 0) shuffle(phrases);
+
+                applyPhrase(entry);
+                tickerEl.style.animation = 'none';
+                tickerEl.offsetWidth; // reflow
+                const pxPerSec = 90;
+                const totalPx = window.innerWidth + tickerEl.scrollWidth + 80;
+                const dur = totalPx / pxPerSec;
+                tickerEl.style.animation = `tickerScroll ${dur}s linear`;
+            }
+
+            tickerEl.addEventListener('animationend', scrollPhrase);
+            scrollPhrase();
+
+            // Click ticker bar → jump to a new random phrase immediately
+            tickerFooter.addEventListener('click', () => {
+                if (skipping) return;
+                skipping = true;
+
+                // Pick a random phrase that isn't the current one
+                let newIdx;
+                do { newIdx = Math.floor(Math.random() * phrases.length); }
+                while (phrases.length > 1 && newIdx === (idx - 1 + phrases.length) % phrases.length);
+                idx = newIdx;
+
+                // Brief border flash
+                tickerFooter.classList.add('ticker-flash');
+                setTimeout(() => tickerFooter.classList.remove('ticker-flash'), 300);
+
+                // Restart with new phrase
+                tickerEl.removeEventListener('animationend', scrollPhrase);
+                scrollPhrase();
+                tickerEl.addEventListener('animationend', scrollPhrase);
+            });
+        })();
+
+        // ── LOAD SPOT ────────────────────────────────────────────────────────
+        function startVideo(src) {
+            // Stop any current playback cleanly before switching source
+            videoPlayer.pause();
+            videoPlayer.removeAttribute('src');
+            videoPlayer.load();
+
+            videoPlayer.src = src;
+            videoPlayer.load();
+
+            const onReady = () => {
+                videoPlayer.removeEventListener('canplay', onReady);
+                videoPlayer.play().catch(() => {});
+            };
+            videoPlayer.addEventListener('canplay', onReady);
+        }
+
+        function loadSpot(index) {
+            if (index < 0 || index >= CONFIG.spots.length) return;
+            currentSpotIndex = index;
+
+            const spot = CONFIG.spots[index];
+            const items = cachedSpotItems;
+            items.forEach((i, idx) => {
+                i.classList.toggle('active', idx === index);
+            });
+            items[index].scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            showChannel();
+            videoTitle.textContent = spot.name;
+
+            if (staticToggle.checked) {
+                runStatic(550, () => {
+                    videoPlayer.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    startVideo(spot.video);
+                });
+            } else {
+                videoPlayer.style.display = 'block';
+                placeholder.style.display = 'none';
+                startVideo(spot.video);
+            }
+        }
+
+        // ── EASTER CODE ─────────────────────────────────────────────────────
+        const EASTERSequence = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+        let EASTERIndex = 0;
+
+        EASTERClose.addEventListener('click', () => {
+            EASTEROverlay.classList.remove('active');
+            // Build social links from config (once)
+            if (easterLinksEl.children.length === 0) {
+                CONFIG.easterLinks.forEach(link => {
+                    const a = document.createElement('a');
+                    a.className = 'easter-link-btn';
+                    a.href = link.url;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    a.innerHTML = `<span class="easter-link-icon">${link.icon}</span>${link.label}`;
+                    easterLinksEl.appendChild(a);
+                });
+            }
+            // Launch the easter egg video
+            easterVideo.src = 'Clips/EASTER.mp4';
+            easterVideoOverlay.classList.add('active');
+            easterVideo.play().catch(() => {});
+        });
+
+        easterCloseBtn.addEventListener('click', () => {
+            easterVideoOverlay.classList.remove('active');
+            easterVideo.pause();
+            easterVideo.src = '';
+        });
+
+        // ── INITIALIZE ───────────────────────────────────────────────────────
+        function initializeApp() {
+            const titleText = document.querySelector('.header h1').childNodes[0];
+            titleText.textContent = `"${CONFIG.title}"`;
+            document.querySelector('.subtitle').textContent = CONFIG.subtitle;
+
+            if (CONFIG.twitchUrl) {
+                mainTitle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    window.open(CONFIG.twitchUrl, '_blank');
+                });
+            }
+
+            CONFIG.spots.forEach((spot, index) => {
+                const spotItem = document.createElement('div');
+                spotItem.className = 'spot-item';
+                spotItem.setAttribute('data-video', spot.video);
+                spotItem.setAttribute('data-description', spot.description || '');
+                spotItem.textContent = spot.name;
+                spotList.appendChild(spotItem);
+                spotItem.addEventListener('click', function() {
+                    loadSpot(index);
+                });
+            });
+            // Cache the spot item NodeList once after all items are built
+            cachedSpotItems = spotList.querySelectorAll('.spot-item');
+        }
+
+        function pickRandom() {
+            const r = Math.floor(Math.random() * CONFIG.spots.length);
+            loadSpot(r);
+            crtContainer.classList.remove('shake');
+            void crtContainer.offsetWidth;
+            crtContainer.classList.add('shake');
+            setTimeout(() => crtContainer.classList.remove('shake'), 600);
+        }
+
+        // ── KEYBOARD CONTROLS ────────────────────────────────────────────────
+        document.addEventListener('keydown', function(e) {
+            if (e.key === EASTERSequence[EASTERIndex]) {
+                EASTERIndex++;
+                if (EASTERIndex === EASTERSequence.length) {
+                    EASTERIndex = 0;
+                    crtContainer.classList.remove('shake');
+                    void crtContainer.offsetWidth;
+                    crtContainer.classList.add('shake');
+                    setTimeout(() => {
+                        EASTEROverlay.classList.add('active');
+                        crtContainer.classList.remove('shake');
+                    }, 500);
+                }
+            } else {
+                EASTERIndex = 0;
+            }
+            if (e.key === 'r' || e.key === 'R') pickRandom();
+        });
+
+        // ── SPOT COUNT ───────────────────────────────────────────────────
+        function updateSpotCount() {
+            const total = CONFIG.spots.length;
+            document.getElementById('spotMenuHeader').textContent = `[ SELECT A SPOT ] [ 1-${total} ]`;
+        }
+
+        // ── TIMECODE OVERLAY ─────────────────────────────────────────────
+        const timecodeOverlay   = document.getElementById('timecodeOverlay');
+        const timecodeCurrentEl = document.getElementById('timecodeCurrentTime');
+        const timecodeDurEl     = document.getElementById('timecodeDuration');
+
+        function fmtTime(s) {
+            if (isNaN(s)) return '00:00';
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60);
+            return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+        }
+
+        // ── CUSTOM VHS CONTROLS ──────────────────────────────────────────
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const rewBtn       = document.getElementById('rewBtn');
+        const ffBtn        = document.getElementById('ffBtn');
+        const vhsTapeTrack = document.getElementById('vhsTapeTrack');
+        const vhsTapeFill  = document.getElementById('vhsTapeFill');
+        const reelLeft     = document.getElementById('reelLeft');
+        const reelRight    = document.getElementById('reelRight');
+
+        videoPlayer.addEventListener('loadedmetadata', () => {
+            timecodeDurEl.textContent = fmtTime(videoPlayer.duration);
+            timecodeOverlay.classList.add('visible');
+        });
+
+        let timeupdatePending = false;
+        videoPlayer.addEventListener('timeupdate', () => {
+            if (timeupdatePending) return;
+            timeupdatePending = true;
+            requestAnimationFrame(() => {
+                timeupdatePending = false;
+                timecodeCurrentEl.textContent = fmtTime(videoPlayer.currentTime);
+                // Update tape fill
+                const pct = videoPlayer.duration ? (videoPlayer.currentTime / videoPlayer.duration) * 100 : 0;
+                vhsTapeFill.style.width = pct + '%';
+                // Reel spin speed based on progress
+                const speed = Math.max(0.3, 2.5 - (pct / 100) * 2);
+                reelLeft.style.animationDuration  = speed + 's';
+                reelRight.style.animationDuration = speed + 's';
+            });
+        });
+
+        videoPlayer.addEventListener('play', () => {
+            playPauseBtn.textContent = '❙❙ PAUSE';
+            reelLeft.classList.add('spinning');
+            reelRight.classList.add('spinning');
+        });
+
+        videoPlayer.addEventListener('pause', () => {
+            playPauseBtn.textContent = '► PLAY';
+            reelLeft.classList.remove('spinning');
+            reelRight.classList.remove('spinning');
+        });
+
+        videoPlayer.addEventListener('ended', () => {
+            if (videoPlayer.dataset.loopEnabled === '1') {
+                videoPlayer.currentTime = 0;
+                videoPlayer.play().catch(() => {});
+            } else {
+                playPauseBtn.textContent = '► PLAY';
+                reelLeft.classList.remove('spinning');
+                reelRight.classList.remove('spinning');
+            }
+        });
+
+        playPauseBtn.addEventListener('click', () => {
+            if (!videoPlayer.src || videoPlayer.style.display === 'none') return;
+            videoPlayer.paused ? videoPlayer.play() : videoPlayer.pause();
+        });
+
+        rewBtn.addEventListener('click', () => {
+            if (!videoPlayer.src || videoPlayer.style.display === 'none') return;
+            videoPlayer.currentTime = Math.max(0, videoPlayer.currentTime - 3);
+        });
+
+        ffBtn.addEventListener('click', () => {
+            if (!videoPlayer.src || videoPlayer.style.display === 'none') return;
+            videoPlayer.currentTime = Math.min(videoPlayer.duration || 0, videoPlayer.currentTime + 3);
+        });
+
+        // Click-to-seek on tape track
+        vhsTapeTrack.addEventListener('click', (e) => {
+            if (!videoPlayer.duration) return;
+            const rect = vhsTapeTrack.getBoundingClientRect();
+            const pct  = (e.clientX - rect.left) / rect.width;
+            videoPlayer.currentTime = pct * videoPlayer.duration;
+        });
+
+        // ── CRT VOLUME HUD ───────────────────────────────────────────────
+        const crtVolumeHud = document.getElementById('crtVolumeHud');
+        const crtVolBars   = document.getElementById('crtVolBars');
+        const crtVolLabel  = document.getElementById('crtVolLabel');
+        const muteBtn      = document.getElementById('muteBtn');
+        const volDownBtn   = document.getElementById('volDownBtn');
+        const volUpBtn     = document.getElementById('volUpBtn');
+        const videoWrapper = document.querySelector('.video-wrapper');
+
+        const VOL_STEPS = 20;   // number of bar segments
+        const VOL_PEAK  = 16;   // bars at/above this index turn red
+        let volHudTimeout = null;
+
+        // Build bar segments
+        let cachedVolBars = [];
+        for (let i = 0; i < VOL_STEPS; i++) {
+            const bar = document.createElement('div');
+            bar.className = 'crt-vol-bar';
+            // Height scales from short (left) to tall (right)
+            const h = 4 + Math.round((i / (VOL_STEPS - 1)) * 24);
+            bar.style.height = h + 'px';
+            crtVolBars.appendChild(bar);
+            cachedVolBars.push(bar);
+        }
+
+        function updateVolHud() {
+            const vol = videoPlayer.volume;   // 0–1
+            const muted = videoPlayer.muted;
+            const filled = muted ? 0 : Math.round(vol * VOL_STEPS);
+            cachedVolBars.forEach((bar, i) => {
+                const active = i < filled;
+                bar.style.background = active
+                    ? (i >= VOL_PEAK ? '#ff4400' : '#00ff00')
+                    : '#1a1a1a';
+                bar.style.boxShadow = active
+                    ? (i >= VOL_PEAK ? '0 0 8px #ff4400' : '0 0 6px #00ff00')
+                    : 'none';
+            });
+            crtVolLabel.textContent = muted ? '🔇 MUTE' : `VOL ${filled}`;
+            crtVolumeHud.classList.toggle('muted', muted);
+        }
+
+        function showVolHud() {
+            updateVolHud();
+            crtVolumeHud.classList.add('visible');
+            clearTimeout(volHudTimeout);
+            volHudTimeout = setTimeout(() => crtVolumeHud.classList.remove('visible'), 2000);
+        }
+
+        // Volume +/-
+        volUpBtn.addEventListener('click', () => {
+            videoPlayer.volume = Math.min(1, Math.round((videoPlayer.volume + 0.05) * 100) / 100);
+            if (videoPlayer.muted) { videoPlayer.muted = false; muteBtn.textContent = '🔊  MUTE '; }
+            showVolHud();
+        });
+
+        volDownBtn.addEventListener('click', () => {
+            videoPlayer.volume = Math.max(0, Math.round((videoPlayer.volume - 0.05) * 100) / 100);
+            showVolHud();
+        });
+
+        // Mute / Unmute
+        muteBtn.addEventListener('click', () => {
+            videoPlayer.muted = !videoPlayer.muted;
+            muteBtn.textContent = videoPlayer.muted ? '🔇 UNMUTE' : '🔊  MUTE ';
+            showVolHud();
+        });
+
+        // Init mute button state & volume
+        videoPlayer.volume = 1;
+        videoPlayer.muted  = false;
+        updateVolHud();
+
+        // ── FULLSCREEN — double-click video wrapper ───────────────────────
+        videoWrapper.addEventListener('dblclick', () => {
+            if (!document.fullscreenElement) {
+                const fn = videoWrapper.requestFullscreen || videoWrapper.webkitRequestFullscreen || videoWrapper.mozRequestFullScreen;
+                if (fn) fn.call(videoWrapper);
+            } else {
+                const fn = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+                if (fn) fn.call(document);
+            }
+        });
+
+        // ── LOOP TOGGLE ───────────────────────────────────────────────────
+        const loopSwitchWrap = document.getElementById('loopSwitchWrap');
+        const loopToggle     = document.getElementById('loopToggle');
+        const loopStatus     = document.getElementById('loopStatus');
+
+        function applyLoopState(on) {
+            loopToggle.checked = on;
+            videoPlayer.dataset.loopEnabled = on ? '1' : '0';
+            loopStatus.textContent = on ? 'ON' : 'OFF';
+            loopStatus.classList.toggle('off', !on);
+            try { localStorage.setItem('loopEnabled', on ? '1' : '0'); } catch(e) {}
+        }
+
+        // Load saved loop state (default ON)
+        (function() {
+            let saved = '1';
+            try { saved = localStorage.getItem('loopEnabled') ?? '1'; } catch(e) {}
+            applyLoopState(saved === '1');
+        })();
+
+        loopSwitchWrap.addEventListener('click', (e) => {
+            e.stopPropagation();
+            applyLoopState(!loopToggle.checked);
+        });
+
+        // ── TRACKING DISTORTION ──────────────────────────────────────────
+        const trackingSlider = document.getElementById('trackingSlider');
+        const trackingReset  = document.getElementById('trackingReset');
+
+        function applyTracking(val) {
+            const v = val / 100;
+            const blur      = (v * v * 4).toFixed(2);        // 0–4px
+            const hueRot    = Math.round(v * 180);            // 0–180deg
+            const saturate  = (1 + v * 3).toFixed(2);        // 1–4
+            const skewY     = (v * 6).toFixed(2);            // 0–6deg
+            const contrast  = (1 + v * 1.5).toFixed(2);      // 1–2.5
+            videoPlayer.style.filter    = `blur(${blur}px) hue-rotate(${hueRot}deg) saturate(${saturate}) contrast(${contrast})`;
+            videoPlayer.style.transform = `skewY(-${skewY}deg)`;
+        }
+
+        trackingSlider.addEventListener('input', () => applyTracking(trackingSlider.value));
+
+        trackingReset.addEventListener('click', () => {
+            trackingSlider.value = 0;
+            videoPlayer.style.filter    = '';
+            videoPlayer.style.transform = '';
+        });
+
+        // ── BOOT: fetch config then start ────────────────────────────────
+        fetch('config.json')
+            .then(r => r.json())
+            .then(data => {
+                CONFIG = data;
+                initializeApp();
+                updateSpotCount();
+            })
+            .catch(() => {
+                // config.json missing — show a clear error in the spot list
+                spotList.innerHTML = '<div style="color:#ff0000;padding:12px;font-size:1.2rem;letter-spacing:2px;">⚠ config.json NOT FOUND</div>';
+            });
+
+        // Handle video errors
+        videoPlayer.addEventListener('error', function() {
+            placeholder.style.display = 'block';
+            videoPlayer.style.display = 'none';
+            staticOverlay.classList.remove('active');
+            timecodeOverlay.classList.remove('visible');
+            reelLeft.classList.remove('spinning');
+            reelRight.classList.remove('spinning');
+            vhsTapeFill.style.width = '0%';
+            // Put error label inside smpte label
+            const lbl = placeholder.querySelector('.smpte-label');
+            if (lbl) lbl.innerHTML = '⚠ VIDEO FILE NOT FOUND ⚠<br><span style="font-size:1rem">[ CHECK FILE PATH ]</span>';
+        });
+    </script>
 </body>
 </html>
