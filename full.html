@@ -136,7 +136,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         /* Back button */
         .back-btn {
             position: absolute;
@@ -1649,8 +1649,16 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════════
-        // CONFIG — loaded from config.json
-        // Edit config.json to update spots, ticker phrases, and links.
+        // ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗ 
+        //██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝ 
+        //██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+        //██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+        //╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+        // ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝ 
+        // ═══════════════════════════════════════════════════════════════════
+       
+        // ═══════════════════════════════════════════════════════════════════
+        // CONFIG — loaded from config.json (edit that file to update content)
         // ═══════════════════════════════════════════════════════════════════
 
         let CONFIG = {};
@@ -1786,7 +1794,7 @@
         }
 
         // ── TICKER ───────────────────────────────────────────────────────────
-        (function runTicker() {
+        function runTicker() {
             const tickerFooter = tickerEl.parentElement;
             const DEFAULT_COLOR = '#00ffff';
             const DEFAULT_GLOW  = '#00ffff';
@@ -1853,7 +1861,7 @@
                 scrollPhrase();
                 tickerEl.addEventListener('animationend', scrollPhrase);
             });
-        })();
+        }
 
         // ── LOAD SPOT ────────────────────────────────────────────────────────
         function startVideo(src) {
@@ -2213,16 +2221,17 @@
             videoPlayer.style.transform = '';
         });
 
-        // ── BOOT: fetch config then start ────────────────────────────────
+        // ── BOOT: fetch config.json, then start everything ────────────────
         fetch('config.json')
-            .then(r => r.json())
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(data => {
                 CONFIG = data;
                 initializeApp();
                 updateSpotCount();
+                runTicker();
             })
-            .catch(() => {
-                // config.json missing — show a clear error in the spot list
+            .catch(err => {
+                console.error('Failed to load config.json:', err);
                 spotList.innerHTML = '<div style="color:#ff0000;padding:12px;font-size:1.2rem;letter-spacing:2px;">⚠ config.json NOT FOUND</div>';
             });
 

@@ -123,7 +123,7 @@
             display: flex;
             flex-direction: column;
         }
-        
+
         /* Back button */
         .back-btn {
             position: absolute;
@@ -149,7 +149,7 @@
             background: rgba(0,255,255,0.12);
             box-shadow: 0 0 14px rgba(0,255,255,0.5);
         }
-
+        
         /* Header */
         .header {
             text-align: center;
@@ -537,8 +537,16 @@
 
     <script>
         // ═══════════════════════════════════════════════════════════════════
-        // CONFIG — loaded from config.json
-        // Edit config.json to update spots and links.
+        // ██████╗ ██████╗ ███╗   ██╗███████╗██╗ ██████╗ 
+        //██╔════╝██╔═══██╗████╗  ██║██╔════╝██║██╔════╝ 
+        //██║     ██║   ██║██╔██╗ ██║█████╗  ██║██║  ███╗
+        //██║     ██║   ██║██║╚██╗██║██╔══╝  ██║██║   ██║
+        //╚██████╗╚██████╔╝██║ ╚████║██║     ██║╚██████╔╝
+        // ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝     ╚═╝ ╚═════╝ 
+        // ═══════════════════════════════════════════════════════════════════
+       
+        // ═══════════════════════════════════════════════════════════════════
+        // CONFIG — loaded from config.json (edit that file to update content)
         // ═══════════════════════════════════════════════════════════════════
 
         let CONFIG = {};
@@ -608,17 +616,18 @@
             });
         }
         
-        // ── BOOT: fetch config then start ────────────────────────────────
+        // ── BOOT: fetch config.json, then start ──────────────────────────
         fetch('config.json')
-            .then(r => r.json())
+            .then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
             .then(data => {
                 CONFIG = data;
                 initializeApp();
             })
-            .catch(() => {
+            .catch(err => {
+                console.error('Failed to load config.json:', err);
                 spotList.innerHTML = '<div style="color:#ff0000;padding:12px;font-size:1.2rem;letter-spacing:2px;">⚠ config.json NOT FOUND</div>';
             });
-
+        
         // Handle video errors
         videoPlayer.addEventListener('error', function() {
             placeholder.innerHTML = `⚠ VIDEO FILE NOT FOUND ⚠<br><br>`;
