@@ -1043,6 +1043,44 @@
             overflow: hidden;
         }
 
+        /* ── LOCATION TABS ─────────────────────────────────────────────── */
+        .location-tabs {
+            display: flex;
+            gap: 0;
+            margin-bottom: 8px;
+        }
+
+        .loc-tab {
+            flex: 1;
+            font-family: 'VT323', monospace;
+            font-size: 1.1rem;
+            color: #555;
+            background: #0a0a0a;
+            border: 2px solid #333;
+            padding: 5px 6px;
+            cursor: pointer;
+            letter-spacing: 1px;
+            text-align: center;
+            transition: all 0.2s;
+        }
+
+        .loc-tab:not(:first-child) { border-left: none; }
+
+        .loc-tab:hover {
+            color: #00ff00;
+            border-color: #00ff00;
+        }
+
+        .loc-tab.active {
+            color: #00ff00;
+            border-color: #00ff00;
+            background: rgba(0, 255, 0, 0.08);
+            text-shadow: 0 0 8px #00ff00;
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.2);
+        }
+
+        .spot-item.loc-hidden { display: none; }
+
         /* ── SMPTE COLOR BARS ─────────────────────────────────────────── */
         .smpte-bars {
             width: 100%;
@@ -1450,6 +1488,10 @@
                     <div class="spot-menu">
                         <div class="spot-menu-sticky">
                             <div class="spot-menu-header" id="spotMenuHeader">[ SELECT A SPOT ] [ 0 ]</div>
+                            <div class="location-tabs" id="locationTabs">
+                                <button class="loc-tab active" data-loc="San Van">SAN VAN</button>
+                                <button class="loc-tab" data-loc="Isle of Grom">ISLE OF GROM</button>
+                            </div>
                         </div>
                         <div class="spot-list-scroll">
                             <div id="spotList">
@@ -1853,6 +1895,7 @@
                 spotItem.className = 'spot-item';
                 spotItem.setAttribute('data-video', spot.video);
                 spotItem.setAttribute('data-description', spot.description || '');
+                spotItem.setAttribute('data-location', spot.location || 'San Van');
                 spotItem.textContent = spot.name;
                 spotList.appendChild(spotItem);
                 spotItem.addEventListener('click', function() {
@@ -1861,7 +1904,26 @@
             });
             // Cache the spot item NodeList once after all items are built
             cachedSpotItems = spotList.querySelectorAll('.spot-item');
+            // Apply initial tab filter
+            filterSpotsByLocation('San Van');
         }
+
+        // ── LOCATION TAB FILTER ──────────────────────────────────────────────
+        function filterSpotsByLocation(loc) {
+            cachedSpotItems.forEach(item => {
+                item.classList.toggle('loc-hidden', item.getAttribute('data-location') !== loc);
+            });
+            const visibleCount = Array.from(cachedSpotItems).filter(i => !i.classList.contains('loc-hidden')).length;
+            document.getElementById('spotMenuHeader').textContent = `[ SELECT A SPOT ] [ 1-${visibleCount} ]`;
+        }
+
+        document.getElementById('locationTabs').addEventListener('click', function(e) {
+            const tab = e.target.closest('.loc-tab');
+            if (!tab) return;
+            document.querySelectorAll('.loc-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            filterSpotsByLocation(tab.getAttribute('data-loc'));
+        });
 
         function pickRandom() {
             const r = Math.floor(Math.random() * CONFIG.spots.length);
