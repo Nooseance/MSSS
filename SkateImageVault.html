@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Burnto Underground - The Image Vault</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #fff000;
+            --dark: #0a0a0a;
+            --accent: #ff0080;
+            --gray: #2a2a2a;
+            --light-gray: #4a4a4a;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--dark) 0%, #1a1a1a 100%);
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            min-height: 100vh;
+        }
+
+        .magazine-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            background: var(--dark);
+            position: relative;
+        }
+
+        .magazine-header {
+            padding: 20px 40px;
+            border-bottom: 3px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+
+        .mag-title {
+            font-size: 3.5rem;
+            font-weight: 900;
+            letter-spacing: -3px;
+            color: var(--primary);
+            font-family: 'Arial Black', sans-serif;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .mag-issue {
+            font-size: 0.9rem;
+            color: var(--accent);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .page-info {
+            font-size: 1.2rem;
+            color: var(--light-gray);
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .magazine-content {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .page {
+            width: 100%;
+            height: 100%;
+            padding: 40px;
+            display: grid;
+            gap: 20px;
+            overflow: hidden;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 1;
+            transition: opacity 0.4s ease;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-auto-rows: minmax(0, 1fr);
+        }
+
+        .page.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+.page.grid-page {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-auto-rows: minmax(0, 1fr);
+}
+
+.page.grid-page[data-count="1"] {
+    grid-template-columns: 1fr;
+}
+
+.page.grid-page[data-count="2"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page.grid-page[data-count="3"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.page.grid-page[data-count="4"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.page.grid-page[data-count="6"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.page.grid-page[data-count="9"] {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+        .image-card {
+            background: var(--gray);
+            border: 3px solid var(--light-gray);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: -6px 6px 0px rgba(255, 0, 128, 0.3);
+            min-width: 0;
+            min-height: 0;
+        }
+
+        .image-card:hover {
+            transform: translate(-4px, 4px);
+            box-shadow: -10px 10px 0px rgba(255, 0, 128, 0.5);
+            border-color: var(--primary);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+            background: #111;
+        }
+
+        .image-title {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: var(--primary);
+            padding: 8px 12px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            max-width: 100%;
+            text-align: right;
+            pointer-events: none;
+        }
+
+        .image-card.placeholder {
+            background: linear-gradient(135deg, var(--light-gray) 0%, var(--gray) 100%);
+            font-size: 0.9rem;
+            color: var(--light-gray);
+            text-align: center;
+            padding: 20px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border-top: 3px solid var(--primary);
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: var(--primary);
+            color: var(--dark);
+            border: none;
+            padding: 12px 32px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
+            font-family: 'Arial Black', sans-serif;
+            box-shadow: 3px 3px 0px rgba(255, 0, 128, 0.4);
+        }
+
+        .nav-button:hover {
+            background: var(--accent);
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px rgba(255, 240, 0, 0.4);
+        }
+
+        .nav-button:active {
+            transform: translate(0, 0);
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+
+        .status {
+            text-align: center;
+            flex: 1;
+            min-width: 180px;
+            font-size: 0.95rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: bold;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            font-size: 1.5rem;
+            color: var(--primary);
+            letter-spacing: 3px;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .spinner {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+            font-size: 2rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            color: var(--accent);
+            font-weight: bold;
+            text-align: center;
+            padding: 40px;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .fullscreen-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            animation: fadeInModal 0.3s ease;
+        }
+
+        .fullscreen-modal.active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fullscreen-container {
+            position: relative;
+            width: 90%;
+            height: 85%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .fullscreen-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+
+        .fullscreen-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 3rem;
+            color: var(--primary);
+            cursor: pointer;
+            background: rgba(0, 0, 0, 0.6);
+            border: none;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            z-index: 1001;
+        }
+
+        .fullscreen-close:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: scale(1.1);
+        }
+
+        .fullscreen-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 4rem;
+            cursor: pointer;
+            color: rgba(255, 240, 0, 0.2);
+            transition: all 0.2s ease;
+            user-select: none;
+            background: none;
+            border: none;
+            padding: 20px;
+            z-index: 1001;
+        }
+
+        .fullscreen-nav:hover {
+            color: rgba(255, 240, 0, 0.6);
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        .fullscreen-nav.prev {
+            left: 20px;
+        }
+
+        .fullscreen-nav.next {
+            right: 20px;
+        }
+
+        .fullscreen-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.9), transparent);
+            padding: 40px 40px 20px;
+            color: #fff;
+            max-height: 30%;
+            overflow-y: auto;
+        }
+
+        .fullscreen-title {
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .fullscreen-description {
+            font-size: 1rem;
+            color: #ddd;
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .fullscreen-meta {
+            font-size: 0.85rem;
+            color: var(--light-gray);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .back-btn {
+            background: #000;
+            color: #fce303;
+            border: 3px solid #ff00ff;
+            padding: 12px 24px;
+            font-size: 1rem;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.2s ease;
+            font-family: 'Arial Black', sans-serif;
+            box-shadow: 3px 3px 0px rgba(255, 0, 128, 0.4);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            white-space: nowrap;
+        }
+
+        .back-btn:hover {
+            background: #ff0080;
+            transform: translate(-2px, -2px);
+            box-shadow: 5px 5px 0px rgba(255, 240, 0, 0.4);
+            color: #0a0a0a;
+        }
+
+        .back-btn:active {
+            transform: translate(0, 0);
+        }
+
+        @media (max-width: 1024px) {
+            .mag-title {
+                font-size: 2.5rem;
+            }
+
+            .page {
+                padding: 20px;
+                gap: 15px;
+            }
+
+            .controls {
+                padding: 15px 20px;
+            }
+
+            .nav-button,
+            .back-btn {
+                padding: 10px 20px;
+                font-size: 0.9rem;
+            }
+
+            .fullscreen-nav {
+                font-size: 3rem;
+            }
+
+            .fullscreen-title {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .mag-title {
+                font-size: 2rem;
+            }
+
+            .page {
+                padding: 15px;
+                gap: 10px;
+            }
+
+            .magazine-header {
+                padding: 15px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .page-info {
+                font-size: 1rem;
+            }
+
+            .fullscreen-nav {
+                font-size: 2.5rem;
+            }
+
+            .fullscreen-title {
+                font-size: 1.2rem;
+            }
+
+            .fullscreen-description {
+                font-size: 0.9rem;
+            }
+        }
+        /* ── SEASON TABS ── */
+        .season-tabs-bar {
+            background: #111;
+            border-bottom: 2px solid var(--light-gray);
+            display: flex;
+            align-items: stretch;
+            overflow-x: auto;
+            flex-shrink: 0;
+            scrollbar-width: none;
+        }
+        .season-tabs-bar::-webkit-scrollbar { display: none; }
+
+        .season-tab {
+            background: transparent;
+            color: var(--light-gray);
+            border: none;
+            border-right: 1px solid #222;
+            padding: 10px 22px;
+            font-size: 0.82rem;
+            font-weight: 900;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            font-family: 'Arial Black', sans-serif;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+        .season-tab:hover { background: rgba(255,240,0,0.07); color: #fff; }
+        .season-tab.active { background: var(--primary); color: var(--dark); }
+
+        .tab-count {
+            background: rgba(0,0,0,0.2);
+            border-radius: 20px;
+            padding: 1px 8px;
+            font-size: 0.72rem;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="magazine-container">
+        <div class="magazine-header">
+            <div>
+                <div class="mag-title">Burnto Underground</div>
+                <div class="mag-issue">The Image Vault</div>
+            </div>
+            <div class="page-info">Drop <span id="current-page">1</span> of <span id="total-pages">1</span></div>
+        </div>
+
+        <div class="season-tabs-bar" id="season-tabs-bar"></div>
+
+        <div class="magazine-content" id="magazine-content">
+            <div class="loading">
+                <span class="spinner"></span>
+                <div>Loading</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="nav-button" id="prev-btn" onclick="previousPage()">← PREV DROP</button>
+            <a href="index.html" class="back-btn">← RETURN TO THE TOUR</a>
+            <button class="nav-button" id="next-btn" onclick="nextPage()">NEXT DROP →</button>
+        </div>
+    </div>
+
+    <div class="fullscreen-modal" id="fullscreen-modal">
+        <button class="fullscreen-close" onclick="closeFullscreen()">X</button>
+        
+        <div class="fullscreen-container">
+            <button class="fullscreen-nav prev" onclick="fullscreenPrev()">‹</button>
+            <img class="fullscreen-image" id="fullscreen-image" src="" alt="Fullscreen image">
+            <button class="fullscreen-nav next" onclick="fullscreenNext()">›</button>
+            
+            <div class="fullscreen-info" id="fullscreen-info" style="display: none;">
+                <div class="fullscreen-title" id="fullscreen-title"></div>
+                <div class="fullscreen-description" id="fullscreen-description"></div>
+                <div class="fullscreen-meta" id="fullscreen-meta"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    const PAGE_PATTERN = [2, 4, 6, 3, 9, 1];
+
+    let currentPage     = 0;
+    let fullscreenIndex = 0;
+    let pages           = [];
+    let activeImages    = [];
+    let activeMetadata  = {};
+    let seasons         = [];
+    let activeSeasonIdx = 0;
+
+    // Season number extracted from folder name e.g. "Season 2" → "2"
+    function seasonNum(name) {
+        return name.replace(/\D/g, '');
+    }
+
+    async function loadImages() {
+        try {
+            const idxRes = await fetch('SkateImageVault/seasons-index.json');
+            if (!idxRes.ok) { showError('SkateImageVault/seasons-index.json not found'); return; }
+            const seasonNames = await idxRes.json();
+
+            seasons = await Promise.all(seasonNames.map(async name => {
+                const n    = seasonNum(name);
+                const base = 'SkateImageVault/' + name + '/';
+
+                const imgRes = await fetch(base + 'season-' + n + '-images.json');
+                const imagesList = imgRes.ok ? await imgRes.json() : [];
+                const images = imagesList.map(f => base + f).sort().reverse();
+
+                let metadata = {};
+                try {
+                    const metaRes = await fetch(base + 'season-' + n + '-metadata.json');
+                    if (metaRes.ok) metadata = await metaRes.json();
+                } catch(e) {}
+
+                return { name, images, metadata };
+            }));
+
+            // "All" tab: seasons reversed so newest season's images come first
+            const allImages   = [...seasons].reverse().flatMap(s => s.images);
+            const allMetadata = Object.assign({}, ...seasons.map(s => s.metadata));
+            seasons.push({ name: 'All', images: allImages, metadata: allMetadata });
+
+            buildSeasonTabs();
+            // Default to the newest real season (last before All)
+            switchSeason(seasons.length - 2);
+
+        } catch(err) {
+            showError('Failed to load: ' + err.message);
+        }
+    }
+
+    function buildSeasonTabs() {
+        const bar = document.getElementById('season-tabs-bar');
+        bar.innerHTML = '';
+        const defaultIdx = seasons.length - 2; // newest real season
+
+        // All season tabs except All, newest first (reversed)
+        [...seasons].reverse().forEach((season, _, arr) => {
+            const idx = seasons.indexOf(season);
+            if (season.name === 'All') return;
+            const btn = document.createElement('button');
+            btn.className = 'season-tab' + (idx === defaultIdx ? ' active' : '');
+            btn.dataset.idx = idx;
+            btn.innerHTML = `${season.name} <span class="tab-count">${season.images.length}</span>`;
+            btn.onclick = () => switchSeason(idx);
+            bar.appendChild(btn);
+        });
+
+        // Spacer pushes All to the far right
+        const spacer = document.createElement('div');
+        spacer.style.cssText = 'flex:1;';
+        bar.appendChild(spacer);
+
+        // All tab pinned far right
+        const allIdx = seasons.length - 1;
+        const allBtn = document.createElement('button');
+        allBtn.className = 'season-tab';
+        allBtn.dataset.idx = allIdx;
+        allBtn.innerHTML = `All <span class="tab-count">${seasons[allIdx].images.length}</span>`;
+        allBtn.onclick = () => switchSeason(allIdx);
+        bar.appendChild(allBtn);
+    }
+
+    function switchSeason(idx) {
+        activeSeasonIdx = idx;
+        activeImages    = seasons[idx].images;
+        activeMetadata  = seasons[idx].metadata;
+        document.querySelectorAll('.season-tab').forEach(t =>
+            t.classList.toggle('active', parseInt(t.dataset.idx) === idx));
+        pages = buildPages(activeImages);
+        showPage(0);
+        updateControls();
+    }
+
+    function buildPages(images) {
+        const result = [];
+        let imgIdx = 0, patIdx = 0;
+        while (imgIdx < images.length) {
+            let count = PAGE_PATTERN[patIdx % PAGE_PATTERN.length];
+            if (count > images.length - imgIdx) count = images.length - imgIdx;
+            result.push(images.slice(imgIdx, imgIdx + count));
+            imgIdx += count;
+            patIdx++;
+        }
+        return result;
+    }
+
+    function showPage(pageNum) {
+        if (pageNum < 0 || pageNum >= pages.length) return;
+        currentPage = pageNum;
+
+        const container = document.getElementById('magazine-content');
+        const page  = pages[pageNum];
+        const count = page.length;
+
+        let html = `<div class="page grid-page" data-count="${count}">`;
+        page.forEach(imgPath => {
+            const filename = imgPath.split('/').pop();
+            const meta  = activeMetadata[filename];
+            const title = meta ? meta.title : null;
+            const gIdx  = activeImages.indexOf(imgPath);
+            html += `
+                <div class="image-card" onclick="openFullscreen(${gIdx})">
+                    <img src="${imgPath}" alt="Skate photo"
+                         onerror="this.parentElement.classList.add('placeholder'); this.style.display='none'; this.parentElement.insertAdjacentText('afterbegin','⚠ Image not loaded');">
+                    ${title ? `<div class="image-title">${title}</div>` : ''}
+                </div>`;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+
+        document.getElementById('current-page').textContent = pageNum + 1;
+        document.getElementById('total-pages').textContent  = pages.length;
+    }
+
+    function nextPage() {
+        if (currentPage < pages.length - 1) { showPage(currentPage + 1); updateControls(); }
+    }
+    function previousPage() {
+        if (currentPage > 0) { showPage(currentPage - 1); updateControls(); }
+    }
+    function updateControls() {
+        document.getElementById('prev-btn').disabled = currentPage === 0;
+        document.getElementById('next-btn').disabled = currentPage === pages.length - 1;
+    }
+
+    function openFullscreen(idx) {
+        fullscreenIndex = idx;
+        updateFullscreenView();
+        document.getElementById('fullscreen-modal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    function closeFullscreen() {
+        document.getElementById('fullscreen-modal').classList.remove('active');
+        document.body.style.overflow = 'auto';
+    }
+    function updateFullscreenView() {
+        const imgPath  = activeImages[fullscreenIndex];
+        const filename = imgPath.split('/').pop();
+        const meta     = activeMetadata[filename];
+
+        document.getElementById('fullscreen-image').src = imgPath;
+        document.getElementById('fullscreen-meta').textContent =
+            `${fullscreenIndex + 1} of ${activeImages.length}`;
+
+        const infoDiv = document.getElementById('fullscreen-info');
+        if (meta && (meta.title || meta.description)) {
+            infoDiv.style.display = 'block';
+            document.getElementById('fullscreen-title').textContent       = meta.title || '';
+            document.getElementById('fullscreen-description').textContent = meta.description || '';
+        } else {
+            infoDiv.style.display = 'none';
+        }
+    }
+    function fullscreenNext() {
+        if (fullscreenIndex < activeImages.length - 1) { fullscreenIndex++; updateFullscreenView(); }
+    }
+    function fullscreenPrev() {
+        if (fullscreenIndex > 0) { fullscreenIndex--; updateFullscreenView(); }
+    }
+
+    function showError(msg) {
+        document.getElementById('magazine-content').innerHTML =
+            `<div class="error-message">${msg}</div>`;
+    }
+
+    window.addEventListener('load', loadImages);
+
+    document.addEventListener('keydown', e => {
+        const modal = document.getElementById('fullscreen-modal');
+        if (modal.classList.contains('active')) {
+            if (e.key === 'ArrowRight') fullscreenNext();
+            if (e.key === 'ArrowLeft')  fullscreenPrev();
+            if (e.key === 'Escape')     closeFullscreen();
+        } else {
+            if (e.key === 'ArrowRight') nextPage();
+            if (e.key === 'ArrowLeft')  previousPage();
+        }
+    });
+</script>
+</body>
+</html>
